@@ -1,6 +1,6 @@
 import argparse
 import numpy as np
-import GWFA_512
+import GWFA_512_boundary
 
 NUM_NODES = 512
 NUM_EDGES = 6
@@ -31,7 +31,7 @@ def GWFA(query_path, gfa_path):
     print(f"There are {len(query)} genome in the sequence")
     print()
     
-
+    
     batch_size = NUM_NODES 
     x, y = 0, 0 
 
@@ -48,7 +48,7 @@ def GWFA(query_path, gfa_path):
         batch_nodes = nodes[y:y + batch_size]
         batch_edges = edges[y:y + batch_size]
         
-        score, traceback, (end_x, end_y), _ = GWFA_512.GWFA_512_x_512_boundary(batch_nodes, batch_edges, batch_query, (x == 0 and y == 0))
+        score, traceback, (end_x, end_y), _ = GWFA_512_boundary.GWFA_512_x_512_boundary(batch_nodes, batch_edges, batch_query, (x == 0 and y == 0))
         x += end_x
         y += end_y
 
@@ -62,17 +62,19 @@ def GWFA(query_path, gfa_path):
 
     print(f"Final Edit Distance: {edit_distance}")
     #print(f"Path: {path}")
+    
         
         
-  
+        
+if __name__ == "__main__":
+    
+    parser = argparse.ArgumentParser(description="GWFA")
+    parser.add_argument('truncated_gfa_file', type=str, help="Path to the truncated gfa file (.txt)")
+    parser.add_argument('fa_file' , type=str, help="Path to the .fa file")
 
-parser = argparse.ArgumentParser(description="GWFA")
-parser.add_argument('truncated_gfa_file', type=str, help="Path to the truncated gfa file (.txt)")
-parser.add_argument('fa_file' , type=str, help="Path to the .fa file")
+    args     = parser.parse_args()
+    gfa_file = args.truncated_gfa_file
+    fa_file  = args.fa_file
 
-args     = parser.parse_args()
-gfa_file = args.truncated_gfa_file
-fa_file  = args.fa_file
-
-GWFA(fa_file, gfa_file)
+    GWFA(fa_file, gfa_file)
 

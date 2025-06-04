@@ -3,24 +3,27 @@ import numpy as np
 from collections import deque
 from GWFA_golden import golden_512, generate_edges_from_golden
 
-
 NUM_NODES = 512
 NUM_EDGES = 6
 code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
 
 
-def extend_position(traceback, offset, position, i, current_idx, query, nodes, edges):
+def extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges):
+    
+    if i==len(query)-1 or current_idx==len(nodes)-1:
+        return False, i, current_idx
+
     edge_bits = edges[current_idx]
 
     if edge_bits==0 :
         position.append((i, current_idx))
-        return
+        return True, i , current_idx
 
     for k in range(NUM_EDGES):
         if edge_bits & (1 << k): 
             next_idx = current_idx + (NUM_EDGES-k)
 
-            if next_idx < NUM_NODES+1 and i+1 < NUM_NODES+1 and offset[i + 1][next_idx] == 0:
+            if next_idx < len(nodes) and offset[i + 1][next_idx] == 0: 
 
                 if query[i + 1] == nodes[next_idx]:
                     offset[i + 1][next_idx] = 1  
@@ -30,42 +33,49 @@ def extend_position(traceback, offset, position, i, current_idx, query, nodes, e
                     
                     traceback[i+1][next_idx].append( str(NUM_EDGES-k) + 'M' )
 
-                    extend_position(traceback, offset, position, i + 1, next_idx, query, nodes, edges)  
+                    return_values = extend_position_boundary(traceback, offset, position, i + 1, next_idx, query, nodes, edges)
+
+                    if return_values[0] == False: 
+                        return return_values
+                    
 
                 elif query[i + 1] != nodes[next_idx]:
                     # extension stop point
                     position.append((i, current_idx))
             
-            else: 
-                # boundary
-                position.append((i, current_idx))
+            elif next_idx >= len(nodes): 
+                # over next segment
+                return False, i, current_idx
+
+    return True, i, current_idx
 
 
 
-def GWFA_512_x_512(nodes, edges, query):
-    offset      = np.zeros((NUM_NODES+1, NUM_NODES+1)).astype(np.uint32)
-    traceback   = [[[] for _ in range(NUM_NODES+1)] for _ in range(NUM_NODES+1)]
-    position = []
-    queue = deque([(0, 0)])
+def GWFA_512_x_512_boundary(nodes, edges, query, beginning):
+
+    if beginning:
+        offset      = np.zeros((NUM_NODES+1, NUM_NODES+1)).astype(np.uint32)
+        traceback   = [[[] for _ in range(NUM_NODES+1)] for _ in range(NUM_NODES+1)]
+    else:
+        offset      = np.zeros((NUM_NODES, NUM_NODES)).astype(np.uint32)
+        traceback   = [[[] for _ in range(NUM_NODES)] for _ in range(NUM_NODES)]
+        
 
     offset[0][0] = 1
-    current_idx = 0
+    position    = []
+    queue       = deque([(0, 0)])
     edit_distance = 0
+    check = True
     
-    while (not offset[NUM_NODES, NUM_NODES]):
 
-        # print("offset:")
-        # for i in range(NUM_NODES+1):
-        #     print(" ".join(str(offset[i, j]) for j in range(NUM_NODES+1)))
-        # print()
-
-        
+    while (check):
+    
         while(queue):
             i, current_idx = queue.popleft()
-            extend_position(traceback, offset, position, i, current_idx, query, nodes, edges)
-
-            if offset[NUM_NODES, NUM_NODES]:
-                return edit_distance, traceback[NUM_NODES][NUM_NODES], offset
+            check, pos_x, pos_y = extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges)
+            
+            if not check: 
+                return edit_distance, traceback[pos_x][pos_y], (pos_x, pos_y), offset
 
         edit_distance += 1
 
@@ -74,7 +84,8 @@ def GWFA_512_x_512(nodes, edges, query):
             x, y = pos  
             pos_edge_bits = edges[y]
 
-            if x+1 < NUM_NODES+1 and offset[x + 1][y]==0:
+
+            if  offset[x + 1][y]==0:
                 offset[x + 1][y] = 1
                 queue.append((x + 1, y))
 
@@ -83,11 +94,16 @@ def GWFA_512_x_512(nodes, edges, query):
 
                 traceback[x+1][y].append(str(0) + 'I')
 
+
             for t in range(NUM_EDGES):
+
                 if pos_edge_bits & (1 << t): 
                     next_y = y + (NUM_EDGES-t)
 
-                    if next_y < NUM_NODES+1 and offset[x][next_y]==0:
+                    if next_y > len(nodes):
+                        return edit_distance, traceback[pos_x][pos_y], (pos_x, pos_y), offset
+  
+                    if  offset[x][next_y]==0:
                         offset[x][next_y] = 1
                         queue.append((x, next_y))
 
@@ -96,7 +112,8 @@ def GWFA_512_x_512(nodes, edges, query):
 
                         traceback[x][next_y].append(str(NUM_EDGES-t) + 'D')
 
-                    if x+1 < NUM_NODES+1 and next_y < NUM_NODES+1 and offset[x + 1][next_y]==0:
+
+                    if  offset[x + 1][next_y]==0:
                         offset[x + 1][next_y] = 1
                         queue.append((x + 1, next_y)) 
 
@@ -104,19 +121,13 @@ def GWFA_512_x_512(nodes, edges, query):
                             traceback[x+1][next_y].append(move)
 
                         traceback[x+1][next_y].append(str(NUM_EDGES-t) + 'U')
-
         position = []
-
-    # print("offset:")
-    # for i in range(NUM_NODES+1):
-    #     print(" ".join(str(offset[i, j]) for j in range(NUM_NODES+1)))
-    # print()
     
-    return edit_distance, traceback[NUM_NODES][NUM_NODES], offset
-        
-    
+    return edit_distance, traceback[-1][-1], (len(query)-1, len(nodes)-1), offset
 
-def test_512_x_512():
+
+
+def test_512_x_512_boundary():
 
     # for boundary conditions
     nodes        = []
@@ -135,13 +146,6 @@ def test_512_x_512():
         qry = random.getrandbits(2)
         query.append(qry)
 
-    # print("Nodes:")
-    # print([code_to_base[node] for node in nodes]) 
-
-    # print("Query:")
-    # print([code_to_base[q] for q in query])  
-    # print()
-
     # setting for in-edges
     for i in range(1, NUM_NODES):       
         if i <= NUM_EDGES:     
@@ -155,7 +159,7 @@ def test_512_x_512():
 
 
     res, ans = golden_512(golden_edges, query, nodes, NUM_NODES, NUM_EDGES)
-    print("total edit distance (golden) is: ", res)
+    #print("total edit distance (golden) is: ", res)
 
 
     # setting for out-edges
@@ -164,18 +168,21 @@ def test_512_x_512():
 
 
     # GWFA 512x512
-    score, path, offset = GWFA_512_x_512(nodes, edges, query)
-    print("total edit distance is: ", score)
-    #print("traceback path is: ", path)
+    score, path, (end_x, end_y), offset = GWFA_512_x_512_boundary(nodes, edges, query, True)
+    print("edit distance (boundary) is: ", score)
+    print("traceback path is: ", path)
+    print("ends at position x: ", end_x)
+    print("ends at position y: ", end_y)
     print()
 
+    res = ans[end_x][end_y]
 
     # print("golden * offset = GWFA path")
     # for i in range(NUM_NODES+1):
     #     print(" ".join(str(ans[i, j]*offset[i][j]) for j in range(NUM_NODES+1)))
     # print()
 
-
+    
     # check
     check = 0
     for move in path:
@@ -191,8 +198,8 @@ def test_512_x_512():
 
 
  
-    i = NUM_NODES
-    j = NUM_NODES
+    i = end_x
+    j = end_y
     cur = len(path) - 1
     check = 0
 
@@ -241,8 +248,10 @@ def test_512_x_512():
         print("Your result shares same path as the golden")
     else:
         print(f"There are {check} different parts in the path")
-
-
+     
+     
+     
+        
 if __name__ == "__main__":
-    test_512_x_512()
-
+    test_512_x_512_boundary()
+    
