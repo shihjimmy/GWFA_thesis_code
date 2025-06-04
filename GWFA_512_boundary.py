@@ -3,12 +3,11 @@ import numpy as np
 from collections import deque
 from GWFA_golden import golden_512, generate_edges_from_golden
 
-NUM_NODES = 512
-NUM_EDGES = 6
+
 code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
 
 
-def extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges):
+def extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES):
     
     if i==len(query)-1 or current_idx==len(nodes)-1:
         return False, i, current_idx
@@ -33,7 +32,7 @@ def extend_position_boundary(traceback, offset, position, i, current_idx, query,
                     
                     traceback[i+1][next_idx].append( str(NUM_EDGES-k) + 'M' )
 
-                    return_values = extend_position_boundary(traceback, offset, position, i + 1, next_idx, query, nodes, edges)
+                    return_values = extend_position_boundary(traceback, offset, position, i + 1, next_idx, query, nodes, edges, NUM_EDGES)
 
                     if return_values[0] == False: 
                         return return_values
@@ -51,7 +50,7 @@ def extend_position_boundary(traceback, offset, position, i, current_idx, query,
 
 
 
-def GWFA_512_x_512_boundary(nodes, edges, query, beginning):
+def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES):
 
     if beginning:
         offset      = np.zeros((NUM_NODES+1, NUM_NODES+1)).astype(np.uint32)
@@ -72,7 +71,7 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning):
     
         while(queue):
             i, current_idx = queue.popleft()
-            check, pos_x, pos_y = extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges)
+            check, pos_x, pos_y = extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES)
             
             if not check: 
                 return edit_distance, traceback[pos_x][pos_y], (pos_x, pos_y), offset
@@ -127,7 +126,7 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning):
 
 
 
-def test_512_x_512_boundary():
+def test_512_x_512_boundary(NUM_NODES, NUM_EDGES):
 
     # for boundary conditions
     nodes        = []
@@ -253,5 +252,7 @@ def test_512_x_512_boundary():
      
         
 if __name__ == "__main__":
+    NUM_NODES = 512
+    NUM_EDGES = 6
     test_512_x_512_boundary()
     
