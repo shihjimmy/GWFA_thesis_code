@@ -90,17 +90,21 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES
                     current_idx -= int(last_move_pos)
                 
                 # Find the previous extension point
-                for j in range(len(traceback[i][current_idx])-2, -1, -1):
-                    
-                    last_move_pos = traceback[i][current_idx][j][0]
-                    last_move_dir = traceback[i][current_idx][j][1]
-                    
-                    if last_move_dir != "M":
-                        break
-                    else:
-                        i -= 1
-                        current_idx -= int(last_move_pos)
-                    
+                if len(traceback[i][current_idx]) >= 2:
+                    old_i = i
+                    old_idx = current_idx
+                
+                    for j in range(len(traceback[old_i][old_idx])-2, -1, -1):
+
+                        last_move_pos = traceback[old_i][old_idx][j][0]
+                        last_move_dir = traceback[old_i][old_idx][j][1]
+
+                        if last_move_dir != "M":
+                            break
+                        else:
+                            i -= 1
+                            current_idx -= int(last_move_pos)
+
                 
                 edit_distance -= 1
                 return edit_distance, traceback[i][current_idx], (i, current_idx)
