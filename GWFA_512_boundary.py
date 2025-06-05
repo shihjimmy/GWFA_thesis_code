@@ -10,13 +10,13 @@ code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
 def extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES):
     
     if i==len(query)-1 or current_idx==len(nodes)-1:
-        return False, i, current_idx
+        return False, i , current_idx
 
     edge_bits = edges[current_idx]
 
-    if edge_bits==0 :
-        position.append((i, current_idx))
-        return True, i , current_idx
+    # if edge_bits==0 :
+    #     position.append((i, current_idx))
+    #     return True, i , current_idx
 
     for k in range(NUM_EDGES):
         if edge_bits & (1 << k): 
@@ -32,10 +32,10 @@ def extend_position_boundary(traceback, offset, position, i, current_idx, query,
                     
                     traceback[i+1][next_idx].append( str(NUM_EDGES-k) + 'M' )
 
-                    return_values = extend_position_boundary(traceback, offset, position, i + 1, next_idx, query, nodes, edges, NUM_EDGES)
+                    return_values, x, y = extend_position_boundary(traceback, offset, position, i + 1, next_idx, query, nodes, edges, NUM_EDGES)
 
-                    if return_values[0] == False: 
-                        return return_values
+                    if return_values == False: 
+                        return False, x, y 
                     
 
                 elif query[i + 1] != nodes[next_idx]:
@@ -44,9 +44,9 @@ def extend_position_boundary(traceback, offset, position, i, current_idx, query,
             
             elif next_idx >= len(nodes): 
                 # over next segment
-                return False, i, current_idx
+                return False, i , current_idx
 
-    return True, i, current_idx
+    return True, i , current_idx
 
 
 
@@ -71,10 +71,10 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES
     
         while(queue):
             i, current_idx = queue.popleft()
-            check, pos_x, pos_y = extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES)
+            check, i , current_idx = extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES)
             
             if not check: 
-                return edit_distance, traceback[pos_x][pos_y], (pos_x, pos_y), offset
+                return edit_distance, traceback[i][current_idx], (i, current_idx)
 
         edit_distance += 1
 
@@ -100,7 +100,7 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES
                     next_y = y + (NUM_EDGES-t)
 
                     if next_y > len(nodes):
-                        return edit_distance, traceback[pos_x][pos_y], (pos_x, pos_y), offset
+                        return edit_distance, traceback[i][current_idx], (i, current_idx)
   
                     if  offset[x][next_y]==0:
                         offset[x][next_y] = 1
@@ -122,7 +122,7 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES
                         traceback[x+1][next_y].append(str(NUM_EDGES-t) + 'U')
         position = []
     
-    return edit_distance, traceback[-1][-1], (len(query)-1, len(nodes)-1), offset
+    return edit_distance, traceback[-1][-1], (len(query)-1, len(nodes)-1)
 
 
 
@@ -167,7 +167,7 @@ def test_512_x_512_boundary(NUM_NODES, NUM_EDGES):
 
 
     # GWFA 512x512
-    score, path, (end_x, end_y), offset = GWFA_512_x_512_boundary(nodes, edges, query, True)
+    score, path, (end_x, end_y) = GWFA_512_x_512_boundary(nodes, edges, query, True, NUM_NODES, NUM_EDGES)
     print("edit distance (boundary) is: ", score)
     print("traceback path is: ", path)
     print("ends at position x: ", end_x)
@@ -254,5 +254,5 @@ def test_512_x_512_boundary(NUM_NODES, NUM_EDGES):
 if __name__ == "__main__":
     NUM_NODES = 512
     NUM_EDGES = 6
-    test_512_x_512_boundary()
+    test_512_x_512_boundary(NUM_NODES, NUM_EDGES)
     
