@@ -59,7 +59,15 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES
     offset[0][0] = 1
     position    = []
     queue       = deque([(0, 0)])
+    
     edit_distance = 0
+    
+    # if beginning:
+    #     edit_distance = 0
+    # else:
+    #     edit_distance = 1
+    
+    
     check = True
     
 
@@ -69,8 +77,8 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES
             i, current_idx = queue.popleft()
             check, x, y = extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES)
 
-            if not check:
-                
+            if check == False:
+                          
                 if x==len(query)-1 or y==len(nodes)-1:
                     return edit_distance, traceback[x][y], (x, y)
                 
@@ -93,6 +101,7 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES
                 if len(traceback[i][current_idx]) >= 2:
                     old_i = i
                     old_idx = current_idx
+                    flag = False
                 
                     for j in range(len(traceback[old_i][old_idx])-2, -1, -1):
 
@@ -102,13 +111,16 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES
                         if last_move_dir != "M":
                             break
                         else:
+                            flag = True
                             i -= 1
                             current_idx -= int(last_move_pos)
 
-                
-                edit_distance -= 1
-                return edit_distance, traceback[i][current_idx], (i, current_idx)
 
+                if flag:
+                    edit_distance -= 1
+                    
+                    
+                return edit_distance, traceback[i][current_idx], (i, current_idx)
 
         edit_distance += 1
 

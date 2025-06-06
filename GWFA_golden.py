@@ -31,7 +31,6 @@ def golden_512(golden_edges, query, nodes, NUM_NODES, NUM_EDGES):
         for k in range(NUM_EDGES):
             if edge_bits & (1 << (NUM_EDGES - k - 1)): 
                 source.append(ans[0][i-NUM_EDGES+k]+1)
-                source.append(ans[0][i-NUM_EDGES+k]+1)
         
         ans[0][i] = min(source)
     
@@ -72,6 +71,7 @@ def golden(golden_edges, query, nodes, TOTAL_NODES, NUM_EDGES, NUM_QRY):
     # boundary condition
     for i in range(NUM_QRY + 1):
         ans[i][0] = i
+        
     
     for i in range(1, TOTAL_NODES+1):
         edge_bits = golden_edges[i]
@@ -79,7 +79,6 @@ def golden(golden_edges, query, nodes, TOTAL_NODES, NUM_EDGES, NUM_QRY):
 
         for k in range(NUM_EDGES):
             if edge_bits & (1 << (NUM_EDGES - k - 1)): 
-                source.append(ans[0][i-NUM_EDGES+k]+1)
                 source.append(ans[0][i-NUM_EDGES+k]+1)
         
         ans[0][i] = min(source)
@@ -117,12 +116,16 @@ def golden(golden_edges, query, nodes, TOTAL_NODES, NUM_EDGES, NUM_QRY):
     min_right = np.min(rightmost_column)
     min_bottom = np.min(bottommost_row)
 
+
+
     if min_right <= min_bottom:
         smallest = min_right
         pos = (int(np.argmin(rightmost_column)), TOTAL_NODES)
     else:
         smallest = min_bottom
         pos = (NUM_QRY, int(np.argmin(bottommost_row)))
+
+
 
     return smallest, pos, ans, rightmost_column, bottommost_row
 
