@@ -51,7 +51,7 @@ def extend_position_boundary(traceback, offset, position, i, current_idx, query,
 
 
 
-def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES):
+def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM_EDGES):
 
     if beginning:
         offset      = np.zeros((NUM_NODES+1, NUM_NODES+1)).astype(np.uint32)
@@ -69,30 +69,56 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES
     
 
     while (check):
+               
+        """
+            farthest wavefront should be processed first!!!
+        """
         
-        # # fastest wavefront
-        # max_x = max(queue, key=lambda x: x[0])[0]
-        # max_y = max(queue, key=lambda x: x[1])[1]
+        sorted_queue = sorted(queue, key=lambda x: (x[1], x[0]), reverse=True)
+        idx = 0
         
-        # if len(nodes) - max_y <= NUM_EDGES:
-        #     return edit_distance, traceback[max_x][max_y], (max_x, max_y)
-        
-        
-        
-        while(queue):
-            i, current_idx = queue.popleft()
+        while(idx != len(sorted_queue)):
+            i, current_idx = sorted_queue[idx]
+            idx += 1
 
             check, x , y = extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES)
             
             if not check:
-                #print("hi")
+                
+                if not last:
+                    # When check is False, backtrack using the last move
+                    last_move_pos = traceback[x][y][-1][0]  # Get the position of the last move
+                    last_move_dir = traceback[x][y][-1][1]  # Get the direction of the last move
+
+                    # If I / D / U
+                    if last_move_dir == 'I':  # Insert
+                        x -= 1
+                        edit_distance -= 1
+                        
+                    elif last_move_dir == 'D':  # Delete
+                        y -= int(last_move_pos)
+                        edit_distance -= 1
+                        
+                    elif last_move_dir == 'U':  # Mismatch
+                        x -= 1
+                        y -= int(last_move_pos)
+                        edit_distance -= 1
+                    
+                
                 return edit_distance, traceback[x][y], (x, y)
 
         
         edit_distance += 1
+        
+    
+        """
+            farthest wavefront should be processed first!!!
+        """
+        sorted_pos = sorted(position, key=lambda x: (x[1], x[0]), reverse=True)
+
 
         # expansion
-        for pos in position:
+        for pos in sorted_pos:
             x, y = pos  
             pos_edge_bits = edges[y]
 
@@ -139,6 +165,8 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES
         position = []
     
     return edit_distance, traceback[-1][-1], (len(query)-1, len(nodes)-1)
+
+
 
 
 

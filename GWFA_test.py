@@ -7,10 +7,10 @@ import GWFA_512_preload
 import GWFA_golden
 
 
-NUM_NODES = 5
-NUM_EDGES = 1
-TOTAL_NODES = 51
-NUM_QRY = 25
+NUM_NODES = 50
+NUM_EDGES = 6
+TOTAL_NODES = 510
+NUM_QRY = 250
 code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
 
 RETREAT_STEP = 3
@@ -87,7 +87,7 @@ def GWFA_test():
         beginning = x==0 and y==0
         last = batch_size >= (left_x) or batch_size >= (left_y)
         
-        score, traceback, (end_x, end_y) = GWFA_512_boundary.GWFA_512_x_512_boundary(batch_nodes, batch_edges, batch_query, beginning, NUM_NODES, NUM_EDGES)
+        score, traceback, (end_x, end_y) = GWFA_512_boundary.GWFA_512_x_512_boundary(batch_nodes, batch_edges, batch_query, beginning, last, NUM_NODES, NUM_EDGES)
         #score, traceback, (end_x, end_y) = GWFA_512_retreat.GWFA_512_x_512_boundary(batch_nodes, batch_edges, batch_query, beginning, NUM_NODES, NUM_EDGES)
         
         
