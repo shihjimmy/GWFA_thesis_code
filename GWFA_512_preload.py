@@ -1,17 +1,19 @@
 import random
 import numpy as np
+import copy
 from collections import deque
+
 
 def extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES):
     
     if i==len(query)-1 or current_idx==len(nodes)-1:
-        return False, i, current_idx
+        return False, i , current_idx
 
     edge_bits = edges[current_idx]
 
     # if edge_bits==0 :
     #     position.append((i, current_idx))
-    #     return True
+    #     return True, i , current_idx
 
     for k in range(NUM_EDGES):
         if edge_bits & (1 << k): 
@@ -36,86 +38,73 @@ def extend_position_boundary(traceback, offset, position, i, current_idx, query,
                 elif query[i + 1] != nodes[next_idx]:
                     # extension stop point
                     position.append((i, current_idx))
+                    
             
             elif next_idx >= len(nodes): 
                 # over next segment
-                return False, i, current_idx
-            
-    return True, i, current_idx
+                return False, i , current_idx
+
+    return True, i , current_idx
 
 
 
-
-def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM_EDGES):
+def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM_EDGES, RETREAT_STEP, preload_pos):
 
     if beginning:
         offset      = np.zeros((NUM_NODES+1, NUM_NODES+1)).astype(np.uint32)
         traceback   = [[[] for _ in range(NUM_NODES+1)] for _ in range(NUM_NODES+1)]
+        queue       = deque([(0, 0)])
+        offset[0][0] = 1
+        
     else:
         offset      = np.zeros((NUM_NODES, NUM_NODES)).astype(np.uint32)
         traceback   = [[[] for _ in range(NUM_NODES)] for _ in range(NUM_NODES)]
+        queue       = preload_pos
         
-
-    offset[0][0] = 1
+        for (x,y) in preload_pos:
+            offset[x][y] = 1
+        
+        
     position    = []
-    queue       = deque([(0, 0)])
-    edit_distance = 0
-    
-    
     check = True
+    edit_distance = 0
     
 
     while (check):
-    
-        while(queue):
+        backup = copy.deepcopy(queue)
+        
+
+        while(queue):    
             i, current_idx = queue.popleft()
-            check, x, y = extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES)
-
-            if check == False:
-                          
-                if x==len(query)-1 or y==len(nodes)-1:
-                    return edit_distance, traceback[x][y], (x, y)
-                
-                
-                # When check is False, backtrack using the last move
-                last_move_pos = traceback[i][current_idx][-1][0]  # Get the position of the last move
-                last_move_dir = traceback[i][current_idx][-1][1]  # Get the direction of the last move
-
-                # Backtrack to the previous position based on the direction of the move
-                # Must be I / D / U
-                if last_move_dir == 'I':  # Insert
-                    i -= 1
-                elif last_move_dir == 'D':  # Delete
-                    current_idx -= int(last_move_pos)
-                elif last_move_dir == 'U':  # Mismatch
-                    i -= 1
-                    current_idx -= int(last_move_pos)
-                
-                # Find the previous extension point
-                if len(traceback[i][current_idx]) >= 2:
-                    old_i = i
-                    old_idx = current_idx
-                    flag = False
-                
-                    for j in range(len(traceback[old_i][old_idx])-2, -1, -1):
-
-                        last_move_pos = traceback[old_i][old_idx][j][0]
-                        last_move_dir = traceback[old_i][old_idx][j][1]
-
-                        if last_move_dir != "M":
-                            break
-                        else:
-                            flag = True
-                            i -= 1
-                            current_idx -= int(last_move_pos)
-
-
-                if flag:
-                    edit_distance -= 1
+            check, p, q = extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES)
+            
+            if not check and last:
+                return edit_distance, traceback[p][q], (p, q), None, -1, -1
+            
+            
+            if (not check) and (not last):
                     
-                    
-                return edit_distance, traceback[i][current_idx], (i, current_idx)
+                preload_pos = deque()
+                candidate = []
+                
+                print(backup)
 
+                for (x,y) in backup:
+                    if (i-x <= RETREAT_STEP and i-x >= 0) and (current_idx-y <= RETREAT_STEP and current_idx-y >= 0):
+                        candidate.append((x,y))
+
+                print(i,current_idx)
+                min_x = min(candidate, key=lambda x: x[0])[0]
+                min_y = min(candidate, key=lambda x: x[1])[1]
+
+
+                for (i,j) in candidate:
+                    preload_pos.append( (i-min_x, j-min_y) )
+                    
+                return edit_distance, traceback[i][current_idx], (i, current_idx), preload_pos, min_x, min_y
+            
+
+        
         edit_distance += 1
 
         # expansion
@@ -139,9 +128,12 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM
                 if pos_edge_bits & (1 << t): 
                     next_y = y + (NUM_EDGES-t)
 
-                    if next_y > len(nodes):
-                        return edit_distance, traceback[i][current_idx], (i, current_idx)
-  
+                    
+                    # if next_y > len(nodes):
+                    #     edit_distance -= 1
+                    #     return edit_distance, traceback[x][y], (x, y), preload_pos, min_x, min_y, traceback
+                    
+                    
                     if  offset[x][next_y]==0:
                         offset[x][next_y] = 1
                         queue.append((x, next_y))
@@ -160,7 +152,9 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM
                             traceback[x+1][next_y].append(move)
 
                         traceback[x+1][next_y].append(str(NUM_EDGES-t) + 'U')
+                        
         position = []
     
-    return edit_distance, traceback[-1][-1], (len(query)-1, len(nodes)-1)
+    return edit_distance, traceback[-1][-1], (len(query)-1, len(nodes)-1),  None, -1, -1
 
+    

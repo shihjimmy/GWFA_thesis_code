@@ -35,12 +35,13 @@ def extend_position_boundary(traceback, offset, position, i, current_idx, query,
                     return_values, x, y = extend_position_boundary(traceback, offset, position, i + 1, next_idx, query, nodes, edges, NUM_EDGES)
 
                     if return_values == False: 
-                        return False, x, y 
+                        return False, x, y
                     
 
                 elif query[i + 1] != nodes[next_idx]:
                     # extension stop point
                     position.append((i, current_idx))
+                    
             
             elif next_idx >= len(nodes): 
                 # over next segment
@@ -58,24 +59,36 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES
     else:
         offset      = np.zeros((NUM_NODES, NUM_NODES)).astype(np.uint32)
         traceback   = [[[] for _ in range(NUM_NODES)] for _ in range(NUM_NODES)]
-        
+
 
     offset[0][0] = 1
     position    = []
     queue       = deque([(0, 0)])
-    edit_distance = 0
     check = True
+    edit_distance = 0
     
 
     while (check):
-    
+        
+        # # fastest wavefront
+        # max_x = max(queue, key=lambda x: x[0])[0]
+        # max_y = max(queue, key=lambda x: x[1])[1]
+        
+        # if len(nodes) - max_y <= NUM_EDGES:
+        #     return edit_distance, traceback[max_x][max_y], (max_x, max_y)
+        
+        
+        
         while(queue):
             i, current_idx = queue.popleft()
-            check, i , current_idx = extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES)
-            
-            if not check: 
-                return edit_distance, traceback[i][current_idx], (i, current_idx)
 
+            check, x , y = extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES)
+            
+            if not check:
+                #print("hi")
+                return edit_distance, traceback[x][y], (x, y)
+
+        
         edit_distance += 1
 
         # expansion
@@ -99,9 +112,12 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, NUM_NODES, NUM_EDGES
                 if pos_edge_bits & (1 << t): 
                     next_y = y + (NUM_EDGES-t)
 
+                    
                     if next_y > len(nodes):
+                        edit_distance -= 1
                         return edit_distance, traceback[i][current_idx], (i, current_idx)
-  
+                    
+                    
                     if  offset[x][next_y]==0:
                         offset[x][next_y] = 1
                         queue.append((x, next_y))
