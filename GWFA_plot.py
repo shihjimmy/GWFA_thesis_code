@@ -8,31 +8,25 @@ def flatten_path(path):
     x, y = 0, 0  # Starting position
     coordinates.append((x, y))
 
-    for seg in path:
-        for move in seg:
-            num = int(move[0])
-            direction = move[1]  # 'M', 'I', 'D', 'U'
-
-            if direction == 'M':  # Match
-                x += 1
-                y += num
-
-            elif direction == 'I':  # Insert
-                x += 1
-
-            elif direction == 'D':  # Delete
-                y += num
-
-            elif direction == 'U':  # Mismatch
-                x += 1
-                y += num
-
-            coordinates.append((x, y))
+    for move in path:
+        num = int(move[0])
+        direction = move[1]  # 'M', 'I', 'D', 'U'
+        if direction == 'M':  # Match
+            x += 1
+            y += num
+        elif direction == 'I':  # Insert
+            x += 1
+        elif direction == 'D':  # Delete
+            y += num
+        elif direction == 'U':  # Mismatch
+            x += 1
+            y += num
+        coordinates.append((x, y))
     
     return coordinates
 
 
-def create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, path, final_ending_pos, breakpoints, Block_Size):
+def create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, path, final_ending_pos, breakpoints, gwfa_path):
     # Create the main window
     window = tk.Tk()
     window.title(f"Matrix: {rows}x{cols}")
@@ -63,6 +57,7 @@ def create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, path, final_endi
             score = gold_ans[row][col] 
             cell_color = "white"  
             
+            
             if (row, col) in path: 
                 cell_color = "red"  
             
@@ -72,6 +67,9 @@ def create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, path, final_endi
             
             if (row, col) in breakpoints:  
                 cell_color = "green"  
+            
+            if (row, col) in gwfa_path: 
+                cell_color = "blue" 
             
             if (row, col) == gold_pos:  
                 cell_color = "gray"  
@@ -93,18 +91,21 @@ def create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, path, final_endi
     window.mainloop()
 
 
+
+
+
+
 if __name__ == "__main__":
     # should be same as the setting in GWFA_test.py
-    Block_Size = 5
     
-    gold_ans, gold_pos, path, final_ending_pos, breakpoints = GWFA_test()
+    gold_ans, gold_pos, path, final_ending_pos, breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_test()
 
     rows = gold_ans.shape[0]
     cols = gold_ans.shape[1]
 
     # Flatten the path to convert directions into coordinates
     pos_path = flatten_path(path)
-
+    gwfa_path = flatten_path(gwfa_traceback)
 
     # Call the function with the flattened path, gold_ans, breakpoints, and both final and gold positions
-    create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, pos_path, final_ending_pos, breakpoints, Block_Size)
+    create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, pos_path, final_ending_pos, breakpoints, gwfa_path)

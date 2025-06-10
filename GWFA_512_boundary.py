@@ -75,6 +75,7 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM
         """
         
         sorted_queue = sorted(queue, key=lambda x: (x[1], x[0]), reverse=True)
+        queue.clear()
         idx = 0
         
         while(idx != len(sorted_queue)):
@@ -106,7 +107,6 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM
                     
                 
                 return edit_distance, traceback[x][y], (x, y)
-
         
         edit_distance += 1
         
@@ -211,7 +211,7 @@ def test_512_x_512_boundary(NUM_NODES, NUM_EDGES):
 
 
     # GWFA 512x512
-    score, path, (end_x, end_y) = GWFA_512_x_512_boundary(nodes, edges, query, True, NUM_NODES, NUM_EDGES)
+    score, path, (end_x, end_y) = GWFA_512_x_512_boundary(nodes, edges, query, True, True, NUM_NODES, NUM_EDGES)
     print("edit distance (boundary) is: ", score)
     print("traceback path is: ", path)
     print("ends at position x: ", end_x)

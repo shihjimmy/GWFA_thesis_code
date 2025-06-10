@@ -7,14 +7,23 @@ import GWFA_512_preload
 import GWFA_golden
 
 
-NUM_NODES = 50
+
+
+
 NUM_EDGES = 6
-TOTAL_NODES = 510
-NUM_QRY = 250
+TOTAL_NODES = 450
+NUM_QRY = 150
 code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
 
-RETREAT_STEP = 3
+#RETREAT_STEP = 3
 
+""" 
+    NUM_NODES, which is a batch size for GWFA PE
+    affect the precision significantly
+"""
+
+NUM_NODES = 50
+ANS_NODES = max(NUM_QRY, TOTAL_NODES)
 
 
 
@@ -61,14 +70,14 @@ def GWFA_test():
     x, y = 0, 0 
     left_x, left_y = len(query), len(nodes)
     edit_distance = 0
+
     path = []
     trace_x, trace_y = 0, 0
     
     breakpoints = []
     breakpoints.append((x,y))
+        
     
-    
-    #preload_pos = deque()
 
     print("-----------------------------")
     print("Current position of x is                     :", x)
@@ -88,10 +97,10 @@ def GWFA_test():
         last = batch_size >= (left_x) or batch_size >= (left_y)
         
         score, traceback, (end_x, end_y) = GWFA_512_boundary.GWFA_512_x_512_boundary(batch_nodes, batch_edges, batch_query, beginning, last, NUM_NODES, NUM_EDGES)
+        
+
         #score, traceback, (end_x, end_y) = GWFA_512_retreat.GWFA_512_x_512_boundary(batch_nodes, batch_edges, batch_query, beginning, NUM_NODES, NUM_EDGES)
-        
-        
-        # score, traceback, (end_x, end_y), preload_pos, min_x, min_y = GWFA_512_preload.GWFA_512_x_512_boundary(batch_nodes, batch_edges, batch_query, beginning, last, NUM_NODES, NUM_EDGES, RETREAT_STEP, preload_pos)
+        #score, traceback, (end_x, end_y), preload_pos, min_x, min_y = GWFA_512_preload.GWFA_512_x_512_boundary(batch_nodes, batch_edges, batch_query, beginning, last, NUM_NODES, NUM_EDGES, RETREAT_STEP, preload_pos)
         
         # x += min_x 
         # y += min_y
@@ -118,7 +127,9 @@ def GWFA_test():
         left_y -= (end_y+1)
         
         edit_distance += (score)
-        path.append(traceback)
+        
+        for move in traceback:
+            path.append(move)
         
         
         breakpoints.append((x, y))
@@ -155,8 +166,8 @@ def GWFA_test():
         print("Traceback result can reach                   :", (trace_x, trace_y))
         print("-----------------------------")
         
-           
-           
+        
+       
     print(f"Final Edit Distance                          : {edit_distance}")
     print(f"Final Ending Position                        : {(x, y)}")
     print("-----------------------------")
@@ -177,12 +188,11 @@ def GWFA_test():
     check = 0
     final_trace_result = ""
     
-    for seg in path:
-        for move in seg:
-            final_trace_result += move
-            
-            if move[1] == 'U' or move[1] == 'I' or move[1] == 'D':
-                check += 1
+    for move in path:
+        final_trace_result += move
+        
+        if move[1] == 'U' or move[1] == 'I' or move[1] == 'D':
+            check += 1
             
     print(f"Your MIS/INS/DEL times                       : {check}")
     
@@ -197,14 +207,19 @@ def GWFA_test():
     print(final_trace_result)
     print("-----------------------------")
     
-    return gold_ans, gold_pos, path, (x, y), breakpoints
+    
+    
+    
+    gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_512_boundary.GWFA_512_x_512_boundary(nodes, edges, query, True, True, ANS_NODES, NUM_EDGES)
+    
+    return gold_ans, gold_pos, path, (x, y), breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y)
 
 
 
 
 
 if __name__ == "__main__":
-    gold_ans, gold_pos, path, final_ending_pos, breakpoints = GWFA_test()
+    gold_ans, gold_pos, path, final_ending_pos, breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_test()
     
     # output_file = "GWFA_gold_ans.txt"
     
