@@ -1,4 +1,7 @@
+import sys
+sys.path.append("C:\\Users\\bl430\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages")
 import numpy as np
+from tqdm import tqdm
 
 
 def generate_edges_from_golden(golden_edges, TOTAL_NODES, NUM_EDGES):
@@ -66,6 +69,8 @@ def golden_512(golden_edges, query, nodes, NUM_NODES, NUM_EDGES):
 
 
 def golden(golden_edges, query, nodes, TOTAL_NODES, NUM_EDGES, NUM_QRY):
+    print("-----------------------------")
+
     ans  = np.zeros((NUM_QRY+1, TOTAL_NODES+1)).astype(np.uint32)
     
     # boundary condition
@@ -83,12 +88,18 @@ def golden(golden_edges, query, nodes, TOTAL_NODES, NUM_EDGES, NUM_QRY):
         
         ans[0][i] = min(source)
     
-    # START
-    cost = 0
-    for i in range(1,NUM_QRY+1): 
-        for j in range(1,TOTAL_NODES+1):
+    print("Finish Golden initialization.")
+    print("-----------------------------")
+    
 
-            if(query[i]==nodes[j]):
+    # START
+    # Add tqdm to show progress for the second loop (over NUM_QRY and TOTAL_NODES)
+    cost = 0
+    
+    for i in tqdm(range(1, NUM_QRY+1), desc="Processing"):
+        for j in (range(1, TOTAL_NODES+1)):
+            
+            if(query[i] == nodes[j]):
                 cost = 0
             else:
                 cost = 1
@@ -98,17 +109,16 @@ def golden(golden_edges, query, nodes, TOTAL_NODES, NUM_EDGES, NUM_QRY):
 
             for k in range(NUM_EDGES):
                 if edges & (1 << (NUM_EDGES - k - 1)):  
-                        source.append(ans[i][j-NUM_EDGES+k]+1)
-                        source.append(ans[i-1][j-NUM_EDGES+k]+cost)
+                    source.append(ans[i][j-NUM_EDGES+k]+1)
+                    source.append(ans[i-1][j-NUM_EDGES+k]+cost)
 
             source.append(ans[i-1][j]+1)   
             ans[i][j] = min(source)
 
 
-    # print("golden")
-    # for i in range(NUM_NODES+1):
-    #     print(" ".join(str(ans[i, j]) for j in range(NUM_NODES+1)))
-    # print()
+    print("Finish Golden calculation.")
+    print("-----------------------------")
+
 
     rightmost_column = ans[0:NUM_QRY+1, TOTAL_NODES] 
     bottommost_row = ans[NUM_QRY, 0:TOTAL_NODES+1]    
@@ -126,6 +136,7 @@ def golden(golden_edges, query, nodes, TOTAL_NODES, NUM_EDGES, NUM_QRY):
         pos = (NUM_QRY, int(np.argmin(bottommost_row)))
 
 
+    print("Return Golden semi-global result.")
 
     return smallest, pos, ans, rightmost_column, bottommost_row
 

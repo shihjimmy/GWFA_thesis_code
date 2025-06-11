@@ -1,7 +1,8 @@
+import sys
+sys.path.append("C:\\Users\\bl430\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages")
 import tkinter as tk
-import numpy as np
 from GWFA_test import GWFA_test
-
+from tqdm import tqdm
 
 def flatten_path(path):
     coordinates = []
@@ -51,7 +52,11 @@ def create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, path, final_endi
     canvas.configure(yscrollcommand=y_scrollbar.set)
 
 
-    for row in range(rows):
+    print("Start generating GUI result.")
+    print("-----------------------------")
+
+
+    for row in tqdm(range(rows), desc="Processing"):
         for col in range(cols):
             
             score = gold_ans[row][col] 
@@ -63,7 +68,6 @@ def create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, path, final_endi
             
             if (row, col) == final_ending_pos:
                 cell_color = "yellow"
-            
             
             if (row, col) in breakpoints:  
                 cell_color = "green"  
@@ -92,13 +96,12 @@ def create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, path, final_endi
 
 
 
-
-
-
 if __name__ == "__main__":
     # should be same as the setting in GWFA_test.py
+    check_golden_GWFA = False
+
     
-    gold_ans, gold_pos, path, final_ending_pos, breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_test()
+    gold_ans, gold_pos, path, final_ending_pos, breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_test(check_golden_GWFA)
 
     rows = gold_ans.shape[0]
     cols = gold_ans.shape[1]

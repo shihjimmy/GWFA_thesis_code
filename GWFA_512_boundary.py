@@ -1,6 +1,7 @@
 import random
 import numpy as np
 from collections import deque
+import copy
 from GWFA_golden import golden_512, generate_edges_from_golden
 
 
@@ -19,6 +20,7 @@ def extend_position_boundary(traceback, offset, position, i, current_idx, query,
     #     return True, i , current_idx
 
     for k in range(NUM_EDGES):
+
         if edge_bits & (1 << k): 
             next_idx = current_idx + (NUM_EDGES-k)
 
@@ -71,48 +73,82 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM
     while (check):
                
         """
-            farthest wavefront should be processed first!!!
+            furthest wavefront should be processed first!!!
         """
         
         sorted_queue = sorted(queue, key=lambda x: (x[1], x[0]), reverse=True)
         queue.clear()
         idx = 0
+
+        copy_trace = copy.deepcopy(traceback)
         
         while(idx != len(sorted_queue)):
+
             i, current_idx = sorted_queue[idx]
             idx += 1
 
-            check, x , y = extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES)
+            check, x , y = extend_position_boundary(copy_trace, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES)
             
             if not check:
                 
                 if not last:
-                    # When check is False, backtrack using the last move
-                    last_move_pos = traceback[x][y][-1][0]  # Get the position of the last move
-                    last_move_dir = traceback[x][y][-1][1]  # Get the direction of the last move
+                    x = i
+                    y = current_idx
 
-                    # If I / D / U
-                    if last_move_dir == 'I':  # Insert
-                        x -= 1
-                        edit_distance -= 1
+                    """ 
+                        Determine the retreat step for the breakpoint in the current tile
+                    """
+                    retreat_step = 1
+
+                    while(retreat_step > 0):
+
+                        last_move_pos = copy_trace[x][y][-1][0]  # Get the position of the last move
+                        last_move_dir = copy_trace[x][y][-1][1]  # Get the direction of the last move
+
+                        # I / D / U
+                        if last_move_dir == 'I':  # Insert
+                            x -= 1
+                            edit_distance -= 1
                         
-                    elif last_move_dir == 'D':  # Delete
-                        y -= int(last_move_pos)
-                        edit_distance -= 1
+                        elif last_move_dir == 'D':  # Delete
+                            y -= int(last_move_pos)
+                            edit_distance -= 1
                         
-                    elif last_move_dir == 'U':  # Mismatch
-                        x -= 1
-                        y -= int(last_move_pos)
-                        edit_distance -= 1
-                    
-                
-                return edit_distance, traceback[x][y], (x, y)
-        
+                        elif last_move_dir == 'U':  # Mismatch
+                            x -= 1
+                            y -= int(last_move_pos)
+                            edit_distance -= 1
+
+                        
+                        # Find the previous extension point
+                        old_i   = x
+                        old_idx = y
+
+
+                        for j in range(len(copy_trace[old_i][old_idx])-1, -1, -1):
+
+                            last_move_pos = copy_trace[old_i][old_idx][j][0]
+                            last_move_dir = copy_trace[old_i][old_idx][j][1]
+
+                            if last_move_dir != "M":
+                                break
+                            else:
+                                x -= 1
+                                y -= int(last_move_pos)
+
+
+                        retreat_step -= 1
+
+
+                return edit_distance, copy_trace[x][y], (x, y)
+            
+
+        traceback = copy.deepcopy(copy_trace)
         edit_distance += 1
-        
     
+
         """
-            farthest wavefront should be processed first!!!
+            furthest wavefront should be processed first!!!
         """
         sorted_pos = sorted(position, key=lambda x: (x[1], x[0]), reverse=True)
 
@@ -295,6 +331,7 @@ def test_512_x_512_boundary(NUM_NODES, NUM_EDGES):
      
      
         
+
 if __name__ == "__main__":
     NUM_NODES = 512
     NUM_EDGES = 6

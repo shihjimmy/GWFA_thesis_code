@@ -1,33 +1,25 @@
-import numpy as np
 import random
-from collections import deque
 import GWFA_512_boundary
-import GWFA_512_retreat
-import GWFA_512_preload
 import GWFA_golden
 
 
-
-
-
-NUM_EDGES = 6
-TOTAL_NODES = 450
-NUM_QRY = 150
 code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
+NUM_EDGES = 6
+TOTAL_NODES = 15000
+NUM_QRY = 150000
 
-#RETREAT_STEP = 3
 
 """ 
     NUM_NODES, which is a batch size for GWFA PE
     affect the precision significantly
 """
 
-NUM_NODES = 50
+NUM_NODES = 256
 ANS_NODES = max(NUM_QRY, TOTAL_NODES)
 
 
 
-def GWFA_test():
+def GWFA_test(check_golden_GWFA = False):
 
     # for boundary conditions
     nodes        = []
@@ -76,9 +68,10 @@ def GWFA_test():
     
     breakpoints = []
     breakpoints.append((x,y))
-        
-    
 
+
+    print("-----------------------------")
+    print("Start GWFA caculation.")
     print("-----------------------------")
     print("Current position of x is                     :", x)
     print("Current position of y is                     :", y)
@@ -98,29 +91,6 @@ def GWFA_test():
         
         score, traceback, (end_x, end_y) = GWFA_512_boundary.GWFA_512_x_512_boundary(batch_nodes, batch_edges, batch_query, beginning, last, NUM_NODES, NUM_EDGES)
         
-
-        #score, traceback, (end_x, end_y) = GWFA_512_retreat.GWFA_512_x_512_boundary(batch_nodes, batch_edges, batch_query, beginning, NUM_NODES, NUM_EDGES)
-        #score, traceback, (end_x, end_y), preload_pos, min_x, min_y = GWFA_512_preload.GWFA_512_x_512_boundary(batch_nodes, batch_edges, batch_query, beginning, last, NUM_NODES, NUM_EDGES, RETREAT_STEP, preload_pos)
-        
-        # x += min_x 
-        # y += min_y
-        # left_x -= (min_x+1)
-        # left_y -= (min_y+1)
-        
-        
-        # # Print the golden values for x range: x to x + end_x and y range: y to y + end_y
-        # print(f"Golden values for x range: {x} to {x + end_x}")
-        # print(f"Golden values for y range: {y} to {y + end_y}")
-
-        # # Print the 2D matrix in a square format
-        # for i in range(x, x + end_x+1):
-        #     row_values = []
-        #     for j in range(y, y + end_y+1):
-        #         row_values.append(str(gold_ans[i][j]))  # Collect each element as a string
-        #     print(" ".join(row_values))  # Print the row with tab separation
-        
-        # print(traceback)
-        
         x += end_x 
         y += end_y
         left_x -= (end_x+1)
@@ -139,13 +109,6 @@ def GWFA_test():
         print("Current edit distance is                     :", edit_distance)
         print("Golden  edit distance at your position is    :", gold_ans[x][y])
         
-        
-        # if  (x < len(query)-1 and y < len(nodes)-1):
-        #     # need to minus 1
-        #     # due to the 1 overlapping genome
-        #     # we start next batch from x, y
-        #     # But previous batch just stops at x, y
-        #     edit_distance -= 1
         
         
         """ Check traceback """
@@ -207,26 +170,26 @@ def GWFA_test():
     print(final_trace_result)
     print("-----------------------------")
     
+
+    gwfa_score = 0
+    gwfa_traceback = []
+    gwfa_end_x = 0
+    gwfa_end_y = 0
+
+
+    if check_golden_GWFA:
+        print("Start Golden GWFA caculation.")
+        print("-----------------------------")
     
+        gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_512_boundary.GWFA_512_x_512_boundary(nodes, edges, query, True, True, ANS_NODES, NUM_EDGES)
+
+
+        print("Finish Golden GWFA caculation.")
+        print("-----------------------------")
     
-    
-    gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_512_boundary.GWFA_512_x_512_boundary(nodes, edges, query, True, True, ANS_NODES, NUM_EDGES)
-    
+
     return gold_ans, gold_pos, path, (x, y), breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y)
 
 
-
-
-
 if __name__ == "__main__":
-    gold_ans, gold_pos, path, final_ending_pos, breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_test()
-    
-    # output_file = "GWFA_gold_ans.txt"
-    
-    # with open(output_file, 'w') as f:
-    #     for row in gold_ans:
-    #         f.write("\t".join(str(cell) for cell in row) + "\n")
-        
-    # print(f"gold_ans has been written to {output_file}")
-
-
+    gold_ans, gold_pos, path, final_ending_pos, breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_test(False)
