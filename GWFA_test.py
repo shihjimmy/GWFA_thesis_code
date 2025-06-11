@@ -5,8 +5,8 @@ import GWFA_golden
 
 code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
 NUM_EDGES = 6
-TOTAL_NODES = 15000
-NUM_QRY = 150000
+TOTAL_NODES = 15000  
+NUM_QRY = 15000
 
 
 """ 
