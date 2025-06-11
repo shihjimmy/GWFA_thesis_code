@@ -97,8 +97,6 @@ def create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, path, final_endi
 if __name__ == "__main__":
     # should be same as the setting in GWFA_test.py
     check_golden_GWFA = False
-
-    
     gold_ans, gold_pos, path, final_ending_pos, breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_test(check_golden_GWFA)
 
     rows = gold_ans.shape[0]

@@ -51,7 +51,6 @@ def GWFA_test(check_golden_GWFA = False):
         golden_edges.append(edge_bits)
         
         
-        
     gold_edit, gold_pos, gold_ans, col, row = GWFA_golden.golden(golden_edges, query, nodes, TOTAL_NODES, NUM_EDGES, NUM_QRY)
     
     # setting for out-edges
