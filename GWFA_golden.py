@@ -1,5 +1,3 @@
-import sys
-sys.path.append("C:\\Users\\bl430\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages")   
 import numpy as np
 from tqdm import tqdm
 
@@ -19,7 +17,7 @@ def generate_edges_from_golden(golden_edges, TOTAL_NODES, NUM_EDGES):
 
     return edges
 
- 
+
 def golden_512(golden_edges, query, nodes, NUM_NODES, NUM_EDGES):
     ans  = np.zeros((NUM_NODES+1, NUM_NODES+1)).astype(np.uint32)
     

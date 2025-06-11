@@ -1,5 +1,3 @@
-import sys
-sys.path.append("C:\\Users\\bl430\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages")
 import tkinter as tk
 from GWFA_test import GWFA_test
 from tqdm import tqdm
