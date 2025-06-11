@@ -78,7 +78,6 @@ def GWFA(query_path, gfa_path):
         print("Current position of x is                     :", x)
         print("Current position of y is                     :", y)
         print("Current edit distance is                     :", edit_distance)
-        print("-----------------------------")
 
 
         """ Check traceback """

@@ -84,6 +84,7 @@ for i in lines:
     end_node = binary_search(path_accu_len, int(i[1])+int(i[2]))
     end_offset = int(i[1])+int(i[2]) - path_accu_len[end_node]
     f.write(f"{i[0]} {path[start_node]} {start_offset} {path[end_node]} {end_offset} {i[3]}")
-    
+
+
 f.close()
 print("fq_pos is finished")
