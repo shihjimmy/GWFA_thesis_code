@@ -1,5 +1,5 @@
 import argparse
-
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description="fq_trim")
 parser.add_argument('chrom', type=str, help="chromosome")
@@ -12,6 +12,7 @@ f = open(f"./out_sequence/chr{chrom}_pbsim3.fq", "r")
 f2 = open(f"./out_sequence/chr{chrom}_pbsim3.maf", "r")
 lines = f.readlines()
 lines_maf = f2.readlines()
+
 f.close()
 f2.close()
 
@@ -21,10 +22,7 @@ f2 = open(f"./pbsim3_trim/pbsim3_chr{chrom}_start_pos.txt", "w", newline='\n')
 num_reads = len(lines)//4
 after_trim = 1
 
-lengths = [0 for i in range(10)]
-
-for i in range(num_reads):
-    lengths[ min(len(lines[4*i+1])//1024, 9) ] += 1
+for i in tqdm(range(num_reads), desc="Processing"):
 
     if "N" not in lines[4*i+1]:
         # remove character beyond "ATCG"
@@ -40,7 +38,8 @@ for i in range(num_reads):
         f2.write(f"S1_{after_trim} {lines_maf[(4*i)+1][2]} {lines_maf[(4*i)+1][3]} {lines_maf[(4*i)+2][4]}\n")
         after_trim += 1
 
+
+
 f.close()
 f2.close()
 print("fq_trim is finished")
-#print(num_reads, after_trim)

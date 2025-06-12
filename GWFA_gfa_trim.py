@@ -40,17 +40,20 @@ def write_to_file(start_pos_data, gfa_lines, chrom):
     random.seed(120)
     sampled_indices = random.sample(range(len(start_pos_data)), min(10, len(start_pos_data)))
 
-    with open(f"./out_sequence/chr{chrom}_pbsim3.fq", "r") as f:
+    with open(f"./pbsim3_trim/pbsim3_chr{chrom}_trim.txt", "r") as f:
         fq_lines = f.readlines()
+
 
     # Create a file to save sampled indices
     sampled_indices_file = f"./out_trim/chr{chrom}_sampled_indices.txt"
     
+
     # Write the sampled indices to the file
     with open(sampled_indices_file, 'w') as idx_file:
         for idx in sampled_indices:
             idx_file.write(f"{idx+1}\n")
     
+
     for idx in sampled_indices:
         start_pos = start_pos_data[idx] 
         name = start_pos[0]
@@ -69,10 +72,12 @@ def write_to_file(start_pos_data, gfa_lines, chrom):
             for edge in edges_in_range:
                 f.write("\t".join(str(x) for x in edge) + "\n")
         
+
         with open(sequence_file_name, 'w') as seq_file:
             sequence = fq_lines[4*idx + 1].strip()
             seq_file.write(f">{name}\n{sequence}\n")
-            
+        
+
         print(f"Data for start={name} written to {file_name} and sequence written to {sequence_file_name}")
 
     # Confirm that sampled indices have been saved

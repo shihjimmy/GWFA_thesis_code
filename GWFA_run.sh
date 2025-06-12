@@ -20,10 +20,7 @@ for fa_file in "$TEST_CASE_FOLDER"/*.fa; do
     if [ -f "$gfa_file" ]; then
         echo "Running test case pair: $fa_file and $gfa_file" 
         echo "Running test case pair: $fa_file and $gfa_file" >> "$OUTPUT_FILE"
-        
-        # Use 'time' to run the program and record the execution time
-        # The output of the time command is captured and logged into the file
-        time result=$(python3 GWFA.py "$gfa_file" "$fa_file" ) >> "$OUTPUT_FILE"
+        result=$(python3 GWFA.py "$fa_file" "$gfa_file"  ) >> "$OUTPUT_FILE"
         echo "------------------------------------" >> "$OUTPUT_FILE"
     else
         echo "Warning: No matching .gfa file found for $fa_file"

@@ -1,4 +1,5 @@
 import argparse
+from tqdm import tqdm
 
 def binary_search(arr, target):
     left, right = 0, len(arr) - 1
@@ -33,7 +34,7 @@ f.close()
 nodes = dict()
 in_edges = dict()
 
-for i in lines[1::]:
+for i in tqdm(lines[1::], desc="Processing Lines"):
     line = i[0:-1].split()
 
     if line[0] == "S":
@@ -77,7 +78,7 @@ f.close()
 
 f = open(f"./pbsim3_trim/pbsim3_chr{chrom}_pos_on_graph.txt", "w")
 
-for i in lines:
+for i in tqdm(lines, desc="Processing"):
     i = i.split(" ")
     start_node = binary_search(path_accu_len, int(i[1]))
     start_offset = int(i[1]) - path_accu_len[start_node]

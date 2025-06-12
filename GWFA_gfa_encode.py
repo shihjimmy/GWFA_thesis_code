@@ -1,4 +1,3 @@
-import numpy as np
 import argparse
 
 code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}

@@ -1,9 +1,28 @@
 import argparse
 import GWFA_512_boundary
+import GWFA_golden
+
 
 NUM_NODES = 256
 NUM_EDGES = 6
 code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
+
+
+def generate_in_edges(edges, TOTAL_NODES, NUM_EDGES):
+    golden_edges = [0 for _ in range(TOTAL_NODES)]  
+    for i in range(0, TOTAL_NODES): 
+        edge_bits = 0   
+
+        for j in range(i-NUM_EDGES, i):
+            if j >=0 :
+                pos = i-j
+                if edges[j] & (1 << (NUM_EDGES - pos)):
+                    edge_bits |= (1 << (pos-1))
+
+        golden_edges[i] = edge_bits
+
+    return golden_edges
+
 
 
 def GWFA(query_path, gfa_path):
@@ -30,8 +49,15 @@ def GWFA(query_path, gfa_path):
     print("-----------------------------")
     print(f"There are {len(nodes)} genome in the graph")
     print(f"There are {len(query)} genome in the sequence")
-    
-    
+    print("-----------------------------")
+
+
+    print("Start Golden caculation.")
+    golden_edges = generate_in_edges(edges, len(nodes), NUM_EDGES)
+    # -1 for minus the begginning " " in node and query
+    gold_edit, gold_pos, gold_ans, _, _ = GWFA_golden.golden(golden_edges, query, nodes, len(nodes)-1, NUM_EDGES, len(query)-1)
+
+
     batch_size = NUM_NODES 
     x, y = 0, 0 
     edit_distance = 0
@@ -47,11 +73,10 @@ def GWFA(query_path, gfa_path):
     print("Current position of x is                     :", x)
     print("Current position of y is                     :", y)
     print("Current edit distance is                     :", edit_distance)
+    print("Golden  edit distance at your position is    :", gold_ans[x][y])
     print("-----------------------------")
 
  
-    
-    
     while x < len(query)-1 and y < len(nodes)-1:
         
         batch_query = query[x:x + batch_size]
@@ -78,6 +103,7 @@ def GWFA(query_path, gfa_path):
         print("Current position of x is                     :", x)
         print("Current position of y is                     :", y)
         print("Current edit distance is                     :", edit_distance)
+        print("Golden  edit distance at your position is    :", gold_ans[x][y])
 
 
         """ Check traceback """
@@ -102,6 +128,16 @@ def GWFA(query_path, gfa_path):
 
     print(f"Final Edit Distance                          : {edit_distance}")
     print(f"Final Ending Position                        : {(x, y)}")
+    print("-----------------------------")
+    print(f"Final Edit Distance(golden)                  : {gold_edit}")
+    print(f"Final Ending Position(golden)                : {gold_pos}")
+    print("-----------------------------")
+
+    
+    gold_edit = int(gold_edit)
+    edit_distance = int(edit_distance)
+    precision = (1 - abs(gold_edit - edit_distance) / gold_edit) * 100
+    print(f"Precision = abs(Golden-Yours) / Golden       : {precision:.4f} %")
     print("-----------------------------")
 
 
@@ -134,8 +170,9 @@ def GWFA(query_path, gfa_path):
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="GWFA")
-    parser.add_argument('truncated_gfa_file', type=str, help="Path to the truncated gfa file (.txt)")
+    
     parser.add_argument('fa_file' , type=str, help="Path to the .fa file")
+    parser.add_argument('truncated_gfa_file', type=str, help="Path to the truncated gfa file (.txt)")
 
     args     = parser.parse_args()
     gfa_file = args.truncated_gfa_file
