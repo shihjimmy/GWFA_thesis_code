@@ -20,7 +20,16 @@ for fa_file in "$TEST_CASE_FOLDER"/*.fa; do
     if [ -f "$gfa_file" ]; then
         echo "Running test case pair: $fa_file and $gfa_file" 
         echo "Running test case pair: $fa_file and $gfa_file" >> "$OUTPUT_FILE"
-        result=$(python3 GWFA.py "$fa_file" "$gfa_file"  ) >> "$OUTPUT_FILE"
+
+        python3 GWFA.py "$fa_file" "$gfa_file" >> "$OUTPUT_FILE" 2>&1
+
+        echo "------------------------------------" >> "$OUTPUT_FILE"
+        echo "                                    " >> "$OUTPUT_FILE"
+        echo "                                    " >> "$OUTPUT_FILE"
+        echo "                                    " >> "$OUTPUT_FILE"
+        echo "                                    " >> "$OUTPUT_FILE"
+        echo "                                    " >> "$OUTPUT_FILE"
+        echo "                                    " >> "$OUTPUT_FILE"
         echo "------------------------------------" >> "$OUTPUT_FILE"
     else
         echo "Warning: No matching .gfa file found for $fa_file"

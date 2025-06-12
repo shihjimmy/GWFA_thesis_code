@@ -68,12 +68,13 @@ def GWFA(query_path, gfa_path):
 
 
     print("-----------------------------")
-    print("Start GWFA caculation.")
+    print("Start GWFA calculation.")
     print("-----------------------------")
     print("Current position of x is                     :", x)
     print("Current position of y is                     :", y)
     print("Current edit distance is                     :", edit_distance)
     print("Golden  edit distance at your position is    :", gold_ans[x][y])
+    print("Traceback result can reach                   :", (trace_x, trace_y))
     print("-----------------------------")
 
  
