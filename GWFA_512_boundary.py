@@ -1,7 +1,6 @@
 import random
 import numpy as np
 from collections import deque
-import copy
 from GWFA_golden import golden_512, generate_edges_from_golden
 
 
@@ -80,14 +79,13 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM
         queue.clear()
         idx = 0
 
-        copy_trace = copy.deepcopy(traceback)
         
         while(idx != len(sorted_queue)):
 
             i, current_idx = sorted_queue[idx]
             idx += 1
 
-            check, x , y = extend_position_boundary(copy_trace, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES)
+            check, x , y = extend_position_boundary(traceback, offset, position, i, current_idx, query, nodes, edges, NUM_EDGES)
             
             if not check:
                 
@@ -102,8 +100,8 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM
 
                     while(retreat_step > 0):
 
-                        last_move_pos = copy_trace[x][y][-1][0]  # Get the position of the last move
-                        last_move_dir = copy_trace[x][y][-1][1]  # Get the direction of the last move
+                        last_move_pos = traceback[x][y][-1][0]  # Get the position of the last move
+                        last_move_dir = traceback[x][y][-1][1]  # Get the direction of the last move
 
                         # I / D / U
                         if last_move_dir == 'I':  # Insert
@@ -125,10 +123,10 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM
                         old_idx = y
 
 
-                        for j in range(len(copy_trace[old_i][old_idx])-1, -1, -1):
+                        for j in range(len(traceback[old_i][old_idx])-1, -1, -1):
 
-                            last_move_pos = copy_trace[old_i][old_idx][j][0]
-                            last_move_dir = copy_trace[old_i][old_idx][j][1]
+                            last_move_pos = traceback[old_i][old_idx][j][0]
+                            last_move_dir = traceback[old_i][old_idx][j][1]
 
                             if last_move_dir != "M":
                                 break
@@ -140,10 +138,9 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM
                         retreat_step -= 1
 
 
-                return edit_distance, copy_trace[x][y], (x, y)
+                return edit_distance, traceback[x][y], (x, y)
             
 
-        traceback = copy.deepcopy(copy_trace)
         edit_distance += 1
     
 

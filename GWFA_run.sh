@@ -23,14 +23,13 @@ for fa_file in "$TEST_CASE_FOLDER"/*.fa; do
 
         python3 GWFA.py "$fa_file" "$gfa_file" >> "$OUTPUT_FILE" 2>&1
 
-        echo "------------------------------------" >> "$OUTPUT_FILE"
-        echo "                                    " >> "$OUTPUT_FILE"
-        echo "                                    " >> "$OUTPUT_FILE"
-        echo "                                    " >> "$OUTPUT_FILE"
-        echo "                                    " >> "$OUTPUT_FILE"
-        echo "                                    " >> "$OUTPUT_FILE"
-        echo "                                    " >> "$OUTPUT_FILE"
-        echo "------------------------------------" >> "$OUTPUT_FILE"
+        echo "-----------------------------" >> "$OUTPUT_FILE"
+        echo "                             " >> "$OUTPUT_FILE"
+        echo "                             " >> "$OUTPUT_FILE"
+        echo "                             " >> "$OUTPUT_FILE"
+        echo "                             " >> "$OUTPUT_FILE"
+        echo "                             " >> "$OUTPUT_FILE"
+        echo "-----------------------------" >> "$OUTPUT_FILE"
     else
         echo "Warning: No matching .gfa file found for $fa_file"
     fi

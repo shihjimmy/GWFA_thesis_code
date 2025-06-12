@@ -32,27 +32,13 @@ lines = f.readlines()
 f.close()
 
 nodes = dict()
-in_edges = dict()
 
 for i in tqdm(lines[1::], desc="Processing Lines"):
     line = i[0:-1].split()
 
     if line[0] == "S":
         nodes[int(line[1])] = line[2]
-
-    elif line[0] == "L":
-        start = int(line[1])
-        end = int(line[3])
-
-        if (end < start):
-            print("reverse edge", line)
-            break
-
-        try:
-            in_edges[end].append(start)
-        except:
-            in_edges[end] = [start]
-            
+        
     # path of main sequence
     elif line[0] == "P":
         path = line[2].split("+,")
@@ -80,10 +66,13 @@ f = open(f"./pbsim3_trim/pbsim3_chr{chrom}_pos_on_graph.txt", "w")
 
 for i in tqdm(lines, desc="Processing"):
     i = i.split(" ")
+
     start_node = binary_search(path_accu_len, int(i[1]))
     start_offset = int(i[1]) - path_accu_len[start_node]
+
     end_node = binary_search(path_accu_len, int(i[1])+int(i[2]))
     end_offset = int(i[1])+int(i[2]) - path_accu_len[end_node]
+    
     f.write(f"{i[0]} {path[start_node]} {start_offset} {path[end_node]} {end_offset} {i[3]}")
 
 

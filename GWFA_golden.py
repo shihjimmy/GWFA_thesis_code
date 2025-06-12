@@ -113,10 +113,8 @@ def golden(golden_edges, query, nodes, TOTAL_NODES, NUM_EDGES, NUM_QRY):
             source.append(ans[i-1][j]+1)   
             ans[i][j] = min(source)
 
-
-    print("Finish Golden calculation.")
     print("-----------------------------")
-
+    print("Finish Golden calculation.")
 
     rightmost_column = ans[0:NUM_QRY+1, TOTAL_NODES] 
     bottommost_row = ans[NUM_QRY, 0:TOTAL_NODES+1]    
