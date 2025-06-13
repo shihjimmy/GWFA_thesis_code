@@ -1,5 +1,4 @@
 import tkinter as tk
-from GWFA_test import GWFA_test
 from tqdm import tqdm
 
 def flatten_path(path):

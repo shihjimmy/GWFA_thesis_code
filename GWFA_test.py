@@ -10,8 +10,8 @@ code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
     Can try different combination
 """
 NUM_EDGES = 6       #   edges in graph
-TOTAL_NODES = 2481  #   graph
-NUM_QRY = 7187      #   query
+TOTAL_NODES = 500   #   graph
+NUM_QRY = 500       #   query
 
 
 """ 
@@ -205,7 +205,12 @@ def GWFA_test(check_golden_GWFA = False):
 
 
 if __name__ == "__main__":
+    """ 
+        Want to generate golden path in perfect GWFA mode or not
+    """
+    
     check_golden_GWFA = False 
+
     gold_ans, gold_pos, path, final_ending_pos, breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_test(check_golden_GWFA)
 
 

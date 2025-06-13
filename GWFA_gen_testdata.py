@@ -3,13 +3,14 @@ import random
 from tqdm import tqdm
 
 
-code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
-NUM_EDGES = 6
-
 """ 
     Change this for more generated testdata
 """
 num_of_data = 10
+
+
+code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
+NUM_EDGES = 6
 
 
 def binary_search(arr, target):
@@ -68,16 +69,16 @@ def extract_gfa_data(gfa_lines, start, pos):
 
 
 
-def write_to_file(start_pos_data, gfa_lines, chrom, num_of_data):
+def write_to_file(start_pos_data, gfa_lines, chrom, num_of_data, length):
     random.seed(120)
     sampled_indices = random.sample(range(len(start_pos_data)), min(num_of_data, len(start_pos_data)))
 
-    with open(f"./pbsim3_trim/pbsim3_chr{chrom}_trim.txt", "r") as f:
+    with open(f"./pbsim3_trim_{length}/pbsim3_chr{chrom}_trim.txt", "r") as f:
         fq_lines = f.readlines()
 
 
     # Create a file to save sampled indices
-    sampled_indices_file = f"./out_trim/chr{chrom}_sampled_indices.txt"
+    sampled_indices_file = f"./out_trim_{length}/chr{chrom}_sampled_indices.txt"
     
 
     # Write the sampled indices to the file
@@ -97,8 +98,8 @@ def write_to_file(start_pos_data, gfa_lines, chrom, num_of_data):
 
         nodes_in_range, edges_in_range = extract_gfa_data(gfa_lines, start, pos)
 
-        file_name = f"./out_trim/chr{chrom}_{name}.gfa"
-        sequence_file_name = f"./out_trim/chr{chrom}_{name}.fa" 
+        file_name = f"./out_trim_{length}/chr{chrom}_{name}.gfa"
+        sequence_file_name = f"./out_trim_{length}/chr{chrom}_{name}.fa" 
         
         with open(file_name, 'w') as f:
             for node in nodes_in_range:
@@ -116,7 +117,7 @@ def write_to_file(start_pos_data, gfa_lines, chrom, num_of_data):
         print(f"Data for start={name} written to {file_name} and sequence written to {sequence_file_name}")
 
 
-        file_path = f"./out_trim/chr{chrom}_{name}.gfa"
+        file_path = f"./out_trim_{length}/chr{chrom}_{name}.gfa"
 
         if ".gfa" in file_path:
             prefix = file_path.split(".gfa")[0]
@@ -186,8 +187,7 @@ def write_to_file(start_pos_data, gfa_lines, chrom, num_of_data):
                 for idx, neighbor in enumerate(edges[node_id]):  
 
                     edge_bits |= (1 << (NUM_EDGES - count - 1))
-                    length = len(nodes[neighbor])
-                    accum += length
+                    accum += len(nodes[neighbor])
 
                     if accum > NUM_EDGES:
                         break
@@ -210,22 +210,23 @@ print("---------------------------------------------")
 
 parser = argparse.ArgumentParser(description="generate_gfa_fa_truncated_gfa")
 parser.add_argument('chrom', type=str, help="chromosome")
+parser.add_argument('len', type=str, help="length of pbsim3 sequence")
 
 args     = parser.parse_args()
 chrom    = args.chrom
+length   = args.len
 
-
-f = open(f"./out_sequence/chr{chrom}_pbsim3.fq", "r")
-f2 = open(f"./out_sequence/chr{chrom}_pbsim3.maf", "r")
+f = open(f"./out_sequence_{length}/chr{chrom}_pbsim3_{length}_0001.fq", "r")
+f2 = open(f"./out_sequence_{length}/chr{chrom}_pbsim3_{length}_0001.maf", "r")
 lines = f.readlines()
 lines_maf = f2.readlines()
 
-
+ 
 f.close()
 f2.close()
 
-f = open(f"./pbsim3_trim/pbsim3_chr{chrom}_trim.txt", "w", newline='\n') #　Need to change to .fastq by hand
-f2 = open(f"./pbsim3_trim/pbsim3_chr{chrom}_start_pos.txt", "w", newline='\n')
+f = open(f"./pbsim3_trim_{length}/pbsim3_chr{chrom}_trim.txt", "w", newline='\n') #　Need to change to .fastq by hand
+f2 = open(f"./pbsim3_trim_{length}/pbsim3_chr{chrom}_start_pos.txt", "w", newline='\n')
 
 num_reads = len(lines)//4
 after_trim = 1
@@ -283,11 +284,11 @@ for i in range(len(path)):
     temp += len(nodes[int(path[i])])
 
 
-f = open(f"./pbsim3_trim/pbsim3_chr{chrom}_start_pos.txt", "r")
+f = open(f"./pbsim3_trim_{length}/pbsim3_chr{chrom}_start_pos.txt", "r")
 lines = f.readlines()
 f.close()
 
-f = open(f"./pbsim3_trim/pbsim3_chr{chrom}_pos_on_graph.txt", "w")
+f = open(f"./pbsim3_trim_{length}/pbsim3_chr{chrom}_pos_on_graph.txt", "w")
 
 for i in tqdm(lines, desc="Processing"):
     i = i.split(" ")
@@ -310,8 +311,8 @@ f = open(f"./out_graph/chr{chrom}.gfa", "r")
 gfa_lines = f.readlines()
 f.close()
 
-start_pos_data = read_and_split_file(f"./pbsim3_trim/pbsim3_chr{chrom}_pos_on_graph.txt")
-write_to_file(start_pos_data, gfa_lines, chrom, num_of_data)
+start_pos_data = read_and_split_file(f"./pbsim3_trim_{length}/pbsim3_chr{chrom}_pos_on_graph.txt")
+write_to_file(start_pos_data, gfa_lines, chrom, num_of_data, length)
 print("gfa_trim is finished")
 
 print("---------------------------------------------")

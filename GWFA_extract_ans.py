@@ -1,4 +1,5 @@
 import re
+import argparse
 
 def extract_data_from_file(file_path):
     # Initialize a list to store the extracted values for each execution
@@ -48,8 +49,18 @@ def extract_data_from_file(file_path):
     return all_data
 
 
-file_path = 'GWFA.txt'  # Replace with your actual file path
+
+
+parser = argparse.ArgumentParser(description="which folder")
+parser.add_argument('len', type=str, help="length of pbsim3 sequence")
+
+args     = parser.parse_args()
+length   = args.len
+
+
+file_path = f"GWFA_{length}.txt"  # Replace with your actual file path
 all_extracted_data = extract_data_from_file(file_path)
+
 
 # Extract the precision values from the data
 precisions = [data['precision'] for data in all_extracted_data if 'precision' in data]
@@ -74,7 +85,9 @@ print(f"Min Precision: {min_precision:.4f}")
 print("-" * 50)
 
 # Optionally, write all extracted data to a new file
-output_file = 'GWFA_extracted_results.txt'
+output_file = f"GWFA_{length}_extracted_results.txt"
+
+
 with open(output_file, 'w') as f:
     for idx, data in enumerate(all_extracted_data, start=1):
         f.write(f"Execution {idx}:\n")
