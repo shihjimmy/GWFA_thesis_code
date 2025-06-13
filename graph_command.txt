@@ -34,68 +34,6 @@ tabix -p vcf -f ./Genome_data/chr22.vcf.gz
 ./vg/bin/vg convert -f ./out_graph/chr22_sort_long_node.vg > ./out_graph/chr22_long_node.gfa
 
 
-# PBSIM
-# based on the model, to generate .fa
-./pbsim3/src/pbsim --data-type CLR --depth 1 --model_qc ../PBSIM-PacBio-Simulator/data/model_qc_clr ../Genome_data/GRCh38_chr22.fa --length-mean 3000 --length-sd 0 --prefix 3k
-
-# My command for Pbsim3
-#./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr1.fasta
-#./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr22.fasta
-
-# 1024 and error rate = 1%
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr1.fasta   --accuracy-mean 0.99 --length-mean 1024 --length-sd 0
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./Genome_data/GRCh38_chr22.fasta  --accuracy-mean 0.99 --length-mean 1024 --length-sd 0
-
-# 3072 and error rate = 1%
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr1.fasta   --accuracy-mean 0.99 --length-mean 3072 --length-sd 0
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./Genome_data/GRCh38_chr22.fasta  --accuracy-mean 0.99 --length-mean 3072 --length-sd 0
-
-
-# 6144 and error rate = 1%
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr1.fasta   --accuracy-mean 0.99 --length-mean 6144 --length-sd 0
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./Genome_data/GRCh38_chr22.fasta  --accuracy-mean 0.99 --length-mean 6144 --length-sd 0
-
-
-# 1024 and error rate = 10%
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr1.fasta   --accuracy-mean 0.90 --length-mean 1024 --length-sd 0
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./Genome_data/GRCh38_chr22.fasta  --accuracy-mean 0.90 --length-mean 1024 --length-sd 0
-
-# 3072 and error rate = 10%
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr1.fasta   --accuracy-mean 0.90 --length-mean 3072 --length-sd 0
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./Genome_data/GRCh38_chr22.fasta  --accuracy-mean 0.90 --length-mean 3072 --length-sd 0
-
-
-# 6144 and error rate = 10%
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr1.fasta   --accuracy-mean 0.90 --length-mean 6144 --length-sd 0
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./Genome_data/GRCh38_chr22.fasta  --accuracy-mean 0.90 --length-mean 6144 --length-sd 0
-
-
-# 1024 and error rate = 30%
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr1.fasta   --accuracy-mean 0.70 --length-mean 1024 --length-sd 0
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./Genome_data/GRCh38_chr22.fasta  --accuracy-mean 0.70 --length-mean 1024 --length-sd 0
-
-# 3072 and error rate = 30%
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr1.fasta   --accuracy-mean 0.70 --length-mean 3072 --length-sd 0
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./Genome_data/GRCh38_chr22.fasta  --accuracy-mean 0.70 --length-mean 3072 --length-sd 0
-
-
-# 6144 and error rate = 30%
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr1.fasta   --accuracy-mean 0.70 --length-mean 6144 --length-sd 0
-./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./Genome_data/GRCh38_chr22.fasta  --accuracy-mean 0.70 --length-mean 6144 --length-sd 0
-
-
-
-
-
-# will generate sd_0001.fq
-gzip -d sd_0001.fq.gz
-
-# will generate sd_0001.maf
-gzip -d sd_0001.maf.gz
-
-
-
-
 # Graph aligner
 GraphAligner -g ./out_graph/chr22_long_node.gfa -f ./pbsim/sd_0001_trim.fastq -a ./ga_out/align.gaf -x vg
 

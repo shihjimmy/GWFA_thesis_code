@@ -92,19 +92,3 @@ def create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, path, final_endi
     # Run the window
     window.mainloop()
 
-
-
-if __name__ == "__main__":
-    # should be same as the setting in GWFA_test.py
-    check_golden_GWFA = False
-    gold_ans, gold_pos, path, final_ending_pos, breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_test(check_golden_GWFA)
-
-    rows = gold_ans.shape[0]
-    cols = gold_ans.shape[1]
-
-    # Flatten the path to convert directions into coordinates
-    pos_path = flatten_path(path)
-    gwfa_path = flatten_path(gwfa_traceback)
-
-    # Call the function with the flattened path, gold_ans, breakpoints, and both final and gold positions
-    create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, pos_path, final_ending_pos, breakpoints, gwfa_path)

@@ -6,6 +6,11 @@ from tqdm import tqdm
 code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
 NUM_EDGES = 6
 
+""" 
+    Change this for more generated testdata
+"""
+num_of_data = 10
+
 
 def binary_search(arr, target):
     left, right = 0, len(arr) - 1
@@ -63,9 +68,9 @@ def extract_gfa_data(gfa_lines, start, pos):
 
 
 
-def write_to_file(start_pos_data, gfa_lines, chrom):
+def write_to_file(start_pos_data, gfa_lines, chrom, num_of_data):
     random.seed(120)
-    sampled_indices = random.sample(range(len(start_pos_data)), min(10, len(start_pos_data)))
+    sampled_indices = random.sample(range(len(start_pos_data)), min(num_of_data, len(start_pos_data)))
 
     with open(f"./pbsim3_trim/pbsim3_chr{chrom}_trim.txt", "r") as f:
         fq_lines = f.readlines()
@@ -215,6 +220,7 @@ f2 = open(f"./out_sequence/chr{chrom}_pbsim3.maf", "r")
 lines = f.readlines()
 lines_maf = f2.readlines()
 
+
 f.close()
 f2.close()
 
@@ -305,7 +311,7 @@ gfa_lines = f.readlines()
 f.close()
 
 start_pos_data = read_and_split_file(f"./pbsim3_trim/pbsim3_chr{chrom}_pos_on_graph.txt")
-write_to_file(start_pos_data, gfa_lines, chrom)
+write_to_file(start_pos_data, gfa_lines, chrom, num_of_data)
 print("gfa_trim is finished")
 
 print("---------------------------------------------")

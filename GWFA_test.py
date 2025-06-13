@@ -1,12 +1,17 @@
 import random
 import GWFA_512_boundary
 import GWFA_golden
-
+import time
+from GWFA_plot import flatten_path, create_resizable_matrix_gui
 
 code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
-NUM_EDGES = 6
-TOTAL_NODES = 2481
-NUM_QRY = 7187
+
+""" 
+    Can try different combination
+"""
+NUM_EDGES = 6       #   edges in graph
+TOTAL_NODES = 2481  #   graph
+NUM_QRY = 7187      #   query
 
 
 """ 
@@ -49,9 +54,13 @@ def GWFA_test(check_golden_GWFA = False):
             edge_bits = random.randint(1, 2**NUM_EDGES-1)
         
         golden_edges.append(edge_bits)
-        
-        
+    
+
+    start_time = time.time()
     gold_edit, gold_pos, gold_ans, _, _ = GWFA_golden.golden(golden_edges, query, nodes, TOTAL_NODES, NUM_EDGES, NUM_QRY)
+    end_time = time.time()
+    elapsed_time_gold = end_time - start_time
+    
     
     # setting for out-edges
     edges = GWFA_golden.generate_edges_from_golden(golden_edges, TOTAL_NODES+1, NUM_EDGES)
@@ -79,7 +88,7 @@ def GWFA_test(check_golden_GWFA = False):
     print("Traceback result can reach                   :", (trace_x, trace_y))
     print("-----------------------------")
 
-    
+    start_time = time.time()
     while x < len(query)-1 and y < len(nodes)-1:
         
         batch_query = query[x:x + batch_size]
@@ -128,12 +137,16 @@ def GWFA_test(check_golden_GWFA = False):
         
         print("Traceback result can reach                   :", (trace_x, trace_y))
         print("-----------------------------")
-        
-        
-       
+    
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+
+    print(f"Execution time                               : {elapsed_time} seconds")
     print(f"Final Edit Distance                          : {edit_distance}")
     print(f"Final Ending Position                        : {(x, y)}")
     print("-----------------------------")
+    print(f"Execution time for Golden                    : {elapsed_time_gold} seconds")
     print(f"Final Edit Distance(golden)                  : {gold_edit}")
     print(f"Final Ending Position(golden)                : {gold_pos}")
     print("-----------------------------")
@@ -192,4 +205,20 @@ def GWFA_test(check_golden_GWFA = False):
 
 
 if __name__ == "__main__":
-    gold_ans, gold_pos, path, final_ending_pos, breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_test(False)
+    check_golden_GWFA = False 
+    gold_ans, gold_pos, path, final_ending_pos, breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_test(check_golden_GWFA)
+
+
+    """ 
+        Generate a GUI surface for the calculation result    
+    """
+
+    rows = gold_ans.shape[0]
+    cols = gold_ans.shape[1]
+
+    # Flatten the path to convert directions into coordinates
+    pos_path = flatten_path(path)
+    gwfa_path = flatten_path(gwfa_traceback)
+
+    # Call the function with the flattened path, gold_ans, breakpoints, and both final and gold positions
+    create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, pos_path, final_ending_pos, breakpoints, gwfa_path)

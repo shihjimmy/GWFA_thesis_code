@@ -59,7 +59,7 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM
         traceback   = [[[] for _ in range(NUM_NODES+1)] for _ in range(NUM_NODES+1)]
     else:
         offset      = np.zeros((NUM_NODES, NUM_NODES)).astype(np.uint32)
-        traceback   = [[[] for _ in range(NUM_NODES)] for _ in range(NUM_NODES)]
+        traceback   = [[[] for _ in range(NUM_NODES)] for  _ in range(NUM_NODES)]
 
 
     offset[0][0] = 1

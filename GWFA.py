@@ -1,7 +1,7 @@
 import argparse
 import GWFA_512_boundary
 import GWFA_golden
-
+import time
 
 NUM_NODES = 256
 NUM_EDGES = 6
@@ -55,8 +55,10 @@ def GWFA(query_path, gfa_path):
     print("Start Golden caculation.")
     golden_edges = generate_in_edges(edges, len(nodes), NUM_EDGES)
     # -1 for minus the begginning " " in node and query
+    start_time = time.time()
     gold_edit, gold_pos, gold_ans, _, _ = GWFA_golden.golden(golden_edges, query, nodes, len(nodes)-1, NUM_EDGES, len(query)-1)
-
+    end_time = time.time()
+    elapsed_time_gold = end_time - start_time
 
     batch_size = NUM_NODES 
     x, y = 0, 0 
@@ -77,7 +79,7 @@ def GWFA(query_path, gfa_path):
     print("Traceback result can reach                   :", (trace_x, trace_y))
     print("-----------------------------")
 
- 
+    start_time = time.time()
     while x < len(query)-1 and y < len(nodes)-1:
         
         batch_query = query[x:x + batch_size]
@@ -126,10 +128,14 @@ def GWFA(query_path, gfa_path):
         print("-----------------------------")
 
 
-
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    
+    print(f"Execution time                               : {elapsed_time} seconds")
     print(f"Final Edit Distance                          : {edit_distance}")
     print(f"Final Ending Position                        : {(x, y)}")
     print("-----------------------------")
+    print(f"Execution time for Golden                    : {elapsed_time_gold} seconds")
     print(f"Final Edit Distance(golden)                  : {gold_edit}")
     print(f"Final Ending Position(golden)                : {gold_pos}")
     print("-----------------------------")
