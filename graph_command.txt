@@ -40,7 +40,7 @@ tabix -p vcf -f ./Genome_data/chr22.vcf.gz
 
 # My command for Pbsim3
 #./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr1.fasta
-#./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./Genome_data/GRCh38_chr22.fasta
+#./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr22.fasta
 
 # 1024 and error rate = 1%
 ./pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ./pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./GWFA/Genome_data/GRCh38_chr1.fasta   --accuracy-mean 0.99 --length-mean 1024 --length-sd 0

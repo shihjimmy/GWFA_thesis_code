@@ -1,5 +1,4 @@
 #!/bin/bash
-
 TEST_CASE_FOLDER="./out_trim"  
 OUTPUT_FILE="GWFA.txt"  
 
@@ -37,3 +36,4 @@ done
 
 echo "All test cases have been processed. Results saved to $OUTPUT_FILE."
 
+python3 GWFA_extract_ans.py

@@ -56,6 +56,9 @@ def extract_gfa_data(gfa_lines, start, pos):
             if node1 >= start and node2 <= pos:
                 edges.append(parts)
 
+    nodes.sort(key=lambda x: int(x[1])) 
+    edges.sort(key=lambda x: (int(x[1]), int(x[3])))
+
     return nodes, edges
 
 
@@ -107,7 +110,8 @@ def write_to_file(start_pos_data, gfa_lines, chrom):
 
         print(f"Data for start={name} written to {file_name} and sequence written to {sequence_file_name}")
 
-        file_path = f"./out_trim/chr{chrom}_S1_{name}.gfa"
+
+        file_path = f"./out_trim/chr{chrom}_{name}.gfa"
 
         if ".gfa" in file_path:
             prefix = file_path.split(".gfa")[0]
@@ -130,14 +134,14 @@ def write_to_file(start_pos_data, gfa_lines, chrom):
                 start = int(line[1])
                 end   = int(line[3])
 
-            # after vg's generation, it should be a DAG
-            if (end < start):
-                print("reverse edge", line)
-                break
-            try:
-                edges[start].append(end)
-            except:
-                edges[start] = [end]
+                # after vg's generation, it should be a DAG
+                if (end < start):
+                    print("reverse edge", line)
+                    break
+                try:
+                    edges[start].append(end)
+                except:
+                    edges[start] = [end]
 
 
         nodes = dict(sorted(nodes.items()))
