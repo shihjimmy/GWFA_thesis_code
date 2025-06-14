@@ -90,52 +90,53 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM
             if not check:
                 
                 if not last:
-                    x = i
-                    y = current_idx
+                    pass
+                    # x = i
+                    # y = current_idx
 
-                    """ 
-                        Determine the retreat step for the breakpoint in the current tile
-                    """
-                    retreat_step = 1
+                    # """ 
+                    #     Determine the retreat step for the breakpoint in the current tile
+                    # """
+                    # retreat_step = 1
 
-                    while(retreat_step > 0):
+                    # while(retreat_step > 0):
 
-                        last_move_pos = traceback[x][y][-1][0]  # Get the position of the last move
-                        last_move_dir = traceback[x][y][-1][1]  # Get the direction of the last move
+                    #     last_move_pos = traceback[x][y][-1][0]  # Get the position of the last move
+                    #     last_move_dir = traceback[x][y][-1][1]  # Get the direction of the last move
 
-                        # I / D / U
-                        if last_move_dir == 'I':  # Insert
-                            x -= 1
-                            edit_distance -= 1
+                    #     # I / D / U
+                    #     if last_move_dir == 'I':  # Insert
+                    #         x -= 1
+                    #         edit_distance -= 1
                         
-                        elif last_move_dir == 'D':  # Delete
-                            y -= int(last_move_pos)
-                            edit_distance -= 1
+                    #     elif last_move_dir == 'D':  # Delete
+                    #         y -= int(last_move_pos)
+                    #         edit_distance -= 1
                         
-                        elif last_move_dir == 'U':  # Mismatch
-                            x -= 1
-                            y -= int(last_move_pos)
-                            edit_distance -= 1
+                    #     elif last_move_dir == 'U':  # Mismatch
+                    #         x -= 1
+                    #         y -= int(last_move_pos)
+                    #         edit_distance -= 1
 
                         
-                        # Find the previous extension point
-                        old_i   = x
-                        old_idx = y
+                    #     # Find the previous extension point
+                    #     old_i   = x
+                    #     old_idx = y
 
 
-                        for j in range(len(traceback[old_i][old_idx])-1, -1, -1):
+                    #     for j in range(len(traceback[old_i][old_idx])-1, -1, -1):
 
-                            last_move_pos = traceback[old_i][old_idx][j][0]
-                            last_move_dir = traceback[old_i][old_idx][j][1]
+                    #         last_move_pos = traceback[old_i][old_idx][j][0]
+                    #         last_move_dir = traceback[old_i][old_idx][j][1]
 
-                            if last_move_dir != "M":
-                                break
-                            else:
-                                x -= 1
-                                y -= int(last_move_pos)
+                    #         if last_move_dir != "M":
+                    #             break
+                    #         else:
+                    #             x -= 1
+                    #             y -= int(last_move_pos)
 
 
-                        retreat_step -= 1
+                    #     retreat_step -= 1
 
 
                 return edit_distance, traceback[x][y], (x, y)
@@ -171,10 +172,11 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM
                 if pos_edge_bits & (1 << t): 
                     next_y = y + (NUM_EDGES-t)
 
+                    # Already checked in extension
                     
-                    if next_y > len(nodes):
-                        edit_distance -= 1
-                        return edit_distance, traceback[i][current_idx], (i, current_idx)
+                    # if next_y > len(nodes):
+                    #     edit_distance -= 1
+                    #     return edit_distance, traceback[i][current_idx], (i, current_idx)
                     
                     
                     if  offset[x][next_y]==0:

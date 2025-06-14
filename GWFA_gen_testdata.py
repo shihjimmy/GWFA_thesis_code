@@ -13,6 +13,11 @@ code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
 NUM_EDGES = 6
 
 
+def remove_dashes(sequence):
+    # Remove all dashes from the sequence
+    return sequence.replace("-", "")
+
+
 def binary_search(arr, target):
     left, right = 0, len(arr) - 1
 
@@ -91,19 +96,36 @@ def write_to_file(start_pos_data, gfa_lines, chrom, num_of_data, length):
     
 
     for idx in sampled_indices:
+
         start_pos = start_pos_data[idx] 
         name = start_pos[0]
+
         start = int(start_pos[1])
         pos = int(start_pos[3])
+        start_offset = int(start_pos[2])
+        end_offset = int(start_pos[4])
 
         nodes_in_range, edges_in_range = extract_gfa_data(gfa_lines, start, pos)
 
         file_name = f"./out_trim_{length}/chr{chrom}_{name}.gfa"
         sequence_file_name = f"./out_trim_{length}/chr{chrom}_{name}.fa" 
-        
+
         with open(file_name, 'w') as f:
-            for node in nodes_in_range:
-                f.write("\t".join(str(x) for x in node) + "\n")
+            
+            """
+                Get the subgraph and cutting off the part we don't need      
+            """
+
+            for i in range(len(nodes_in_range)):
+                
+                if i==0:
+                    nodes_in_range[i][2] = nodes_in_range[i][2][start_offset:]
+
+                elif i==len(nodes_in_range)-1:
+                    nodes_in_range[i][2] = nodes_in_range[i][2][:end_offset]
+
+                f.write("\t".join(str(x) for x in nodes_in_range[i]) + "\n")
+                    
             
             for edge in edges_in_range:
                 f.write("\t".join(str(x) for x in edge) + "\n")
@@ -150,19 +172,24 @@ def write_to_file(start_pos_data, gfa_lines, chrom, num_of_data, length):
                     edges[start] = [end]
 
 
-        nodes = dict(sorted(nodes.items()))
+        # Already sorted before
+        #nodes = dict(sorted(nodes.items()))
         node_edge_bits = []
 
-        for i, node_id in enumerate(nodes):
+
+        for _, node_id in enumerate(nodes):
             edge_bits = 0
 
             for i in range(len(nodes[node_id])-1):
                 if nodes[node_id][i] == 'A':
                     edge_bits = 0 | (1 << NUM_EDGES-1)
+
                 elif nodes[node_id][i] == 'T':
                     edge_bits = (1 << NUM_EDGES) | (1 << NUM_EDGES-1)
+
                 elif nodes[node_id][i] == 'C':
                     edge_bits = (2 << NUM_EDGES) | (1 << NUM_EDGES-1)
+
                 else:
                     edge_bits = (3 << NUM_EDGES) | (1 << NUM_EDGES-1)
 
@@ -171,12 +198,16 @@ def write_to_file(start_pos_data, gfa_lines, chrom, num_of_data, length):
 
             if nodes[node_id][-1] == 'A':
                 edge_bits = 0 
+
             elif nodes[node_id][-1] == 'T':
                 edge_bits = (1 << NUM_EDGES) 
+
             elif nodes[node_id][-1] == 'C':
                 edge_bits = (2 << NUM_EDGES) 
+
             else:
                 edge_bits = (3 << NUM_EDGES) 
+
 
 
             if node_id in edges:
@@ -221,32 +252,28 @@ f2 = open(f"./out_sequence_{length}/chr{chrom}_pbsim3_{length}_0001.maf", "r")
 lines = f.readlines()
 lines_maf = f2.readlines()
 
- 
 f.close()
 f2.close()
 
-f = open(f"./pbsim3_trim_{length}/pbsim3_chr{chrom}_trim.txt", "w", newline='\n') #　Need to change to .fastq by hand
+f = open(f"./pbsim3_trim_{length}/pbsim3_chr{chrom}_trim.txt", "w", newline='\n') 
 f2 = open(f"./pbsim3_trim_{length}/pbsim3_chr{chrom}_start_pos.txt", "w", newline='\n')
 
-num_reads = len(lines)//4
+num_reads = len(lines_maf)//4
 after_trim = 1
 
 for i in tqdm(range(num_reads), desc="Processing"):
 
     if "N" not in lines[4*i+1]:
-        # remove character beyond "ATCG"
-        lines[4*i+1] = "".join([c for c in lines[4*i+1] if c in "ATCG\n"])
-        lines[(4*i)+3] = lines[(4*i)+3][:len(lines[(4*i)+1])-1] + "\n"
-        f.writelines([f"@S1_{after_trim}\n", lines[(4*i)+1], f"+S1_{after_trim}\n", lines[(4*i)+3]])
-
-        # write the start position on reference of this read
         lines_maf[(4*i)+1] = [i for i in lines_maf[(4*i)+1].split(" ") if i != '']
         lines_maf[(4*i)+2] = [i for i in lines_maf[(4*i)+2].split(" ") if i != '']
 
-        #print(lines_maf[4*i+1])
+        # remove character beyond "ATCG"
+        lines_maf[(4*i)+2][6] = "".join([c for c in lines_maf[(4*i)+2][6] if c in "ATCG\n"])
+        lines[(4*i)+3] = lines[(4*i)+3][:len(lines[(4*i)+1])-1] + "\n"
+        
+        f.writelines([f"@S1_{after_trim}\n", lines_maf[(4*i)+2][6], f"+S1_{after_trim}\n", lines[(4*i)+3]])
         f2.write(f"S1_{after_trim} {lines_maf[(4*i)+1][2]} {lines_maf[(4*i)+1][3]} {lines_maf[(4*i)+2][4]}\n")
         after_trim += 1
-
 
 
 f.close()
@@ -298,6 +325,11 @@ for i in tqdm(lines, desc="Processing"):
 
     end_node = binary_search(path_accu_len, int(i[1])+int(i[2]))
     end_offset = int(i[1])+int(i[2]) - path_accu_len[end_node]
+
+    if end_offset == 0:
+        # Perfectly fits the node before the already found end_node
+        end_node -= 1
+        end_offset = path_accu_len[end_node] - path_accu_len[end_node-1]
     
     f.write(f"{i[0]} {path[start_node]} {start_offset} {path[end_node]} {end_offset} {i[3]}")
 
@@ -316,4 +348,3 @@ write_to_file(start_pos_data, gfa_lines, chrom, num_of_data, length)
 print("gfa_trim is finished")
 
 print("---------------------------------------------")
-

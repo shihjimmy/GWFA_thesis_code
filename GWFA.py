@@ -2,6 +2,8 @@ import argparse
 import GWFA_512_boundary
 import GWFA_golden
 import time
+#from GWFA_plot import flatten_path, create_resizable_matrix_gui
+
 
 NUM_NODES = 256
 NUM_EDGES = 6
@@ -24,8 +26,7 @@ def generate_in_edges(edges, TOTAL_NODES, NUM_EDGES):
     return golden_edges
 
 
-
-def GWFA(query_path, gfa_path):
+def GWFA(query_path, gfa_path, check_golden_GWFA = False):
     nodes = [code_to_base[4]]
     query = [code_to_base[4]]
     edges = [1<<(NUM_EDGES-1)]
@@ -64,6 +65,8 @@ def GWFA(query_path, gfa_path):
     x, y = 0, 0 
     edit_distance = 0
     path = []
+    breakpoints = []
+    breakpoints.append((x, y))
 
     left_x, left_y = len(query), len(nodes)
     trace_x, trace_y = 0, 0
@@ -98,16 +101,16 @@ def GWFA(query_path, gfa_path):
         
         edit_distance += (score)
         
-
         for move in traceback:
             path.append(move)
+        
+        breakpoints.append((x, y))
 
 
         print("Current position of x is                     :", x)
         print("Current position of y is                     :", y)
         print("Current edit distance is                     :", edit_distance)
         print("Golden  edit distance at your position is    :", gold_ans[x][y])
-
 
         """ Check traceback """
         for move in traceback:
@@ -170,7 +173,25 @@ def GWFA(query_path, gfa_path):
     print("Your traceback result                        : ")
     print(final_trace_result)
     print("-----------------------------")
+
+
+    gwfa_score = 0
+    gwfa_traceback = []
+    gwfa_end_x = 0
+    gwfa_end_y = 0
+
+    if check_golden_GWFA:
+        print("Start Golden GWFA calculation.")
+        print("-----------------------------")
+
+        ANS_NODES = max(len(query), len(nodes))
+        gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_512_boundary.GWFA_512_x_512_boundary(nodes, edges, query, True, True, ANS_NODES, NUM_EDGES)
+
+        print("Finish Golden GWFA calculation.")
+        print("-----------------------------")
+
     
+    return gold_ans, gold_pos, path, (x, y), breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y)
         
         
         
@@ -185,5 +206,24 @@ if __name__ == "__main__":
     gfa_file = args.truncated_gfa_file
     fa_file  = args.fa_file
 
-    GWFA(fa_file, gfa_file)
+    check_golden_GWFA = False
+    gold_ans, gold_pos, path, final_ending_pos, breakpoints, gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA(fa_file, gfa_file, check_golden_GWFA)
+
+
+    
+    """ 
+        Generate a GUI surface for the calculation result (debug)
+    """
+    # debug = False
+
+    # if debug:
+    #     rows = gold_ans.shape[0]
+    #     cols = gold_ans.shape[1]
+
+    #     # Flatten the path to convert directions into coordinates
+    #     pos_path = flatten_path(path)
+    #     gwfa_path = flatten_path(gwfa_traceback)
+
+    #     # Call the function with the flattened path, gold_ans, breakpoints, and both final and gold positions
+    #     create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, pos_path, final_ending_pos, breakpoints, gwfa_path)
 

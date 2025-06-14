@@ -1,3 +1,5 @@
+# Run under ./GWFA folder
+
 # 1024 and error rate = 15%
 ../pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ../pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./Genome_data/GRCh38_chr1.fasta   --accuracy-mean 0.85 --length-mean 1024 --prefix ./out_sequence_1k/chr1_pbsim3_1k
 ../pbsim3/src/pbsim --strategy wgs --method qshmm --qshmm ../pbsim3/data/QSHMM-RSII.model --depth 1 --genome ./Genome_data/GRCh38_chr22.fasta  --accuracy-mean 0.85 --length-mean 1024 --prefix ./out_sequence_1k/chr22_pbsim3_1k

@@ -191,13 +191,13 @@ def GWFA_test(check_golden_GWFA = False):
 
 
     if check_golden_GWFA:
-        print("Start Golden GWFA caculation.")
+        print("Start Golden GWFA calculation.")
         print("-----------------------------")
     
         gwfa_score, gwfa_traceback, (gwfa_end_x, gwfa_end_y) = GWFA_512_boundary.GWFA_512_x_512_boundary(nodes, edges, query, True, True, ANS_NODES, NUM_EDGES)
 
 
-        print("Finish Golden GWFA caculation.")
+        print("Finish Golden GWFA calculation.")
         print("-----------------------------")
     
 
@@ -215,15 +215,17 @@ if __name__ == "__main__":
 
 
     """ 
-        Generate a GUI surface for the calculation result    
+        Generate a GUI surface for the calculation result (debug)
     """
+    debug = False
+    
+    if debug:
+        rows = gold_ans.shape[0]
+        cols = gold_ans.shape[1]
 
-    rows = gold_ans.shape[0]
-    cols = gold_ans.shape[1]
+        # Flatten the path to convert directions into coordinates
+        pos_path = flatten_path(path)
+        gwfa_path = flatten_path(gwfa_traceback)
 
-    # Flatten the path to convert directions into coordinates
-    pos_path = flatten_path(path)
-    gwfa_path = flatten_path(gwfa_traceback)
-
-    # Call the function with the flattened path, gold_ans, breakpoints, and both final and gold positions
-    create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, pos_path, final_ending_pos, breakpoints, gwfa_path)
+        # Call the function with the flattened path, gold_ans, breakpoints, and both final and gold positions
+        create_resizable_matrix_gui(rows, cols, gold_ans, gold_pos, pos_path, final_ending_pos, breakpoints, gwfa_path)
