@@ -93,11 +93,13 @@ def GWFA_512_x_512_boundary(nodes, edges, query, beginning, last, NUM_NODES, NUM
             if not check:
                 
                 if not last:
+
                     """ 
                         (i, current_idx) = the position of the wavefront reaching the boundary
                     """
                     x = i
                     y = current_idx
+
 
                     """ 
                         Determine the retreat step for the breakpoint in the current tile

@@ -1,0 +1,120 @@
+Execution 1:
+  final_ending_position: (938, 948)
+  precision: 100.0
+  mis_ins_del_times: 82
+  traceback_result: True
+--------------------------------------------------
+Execution 2:
+  final_ending_position: (12758, 12761)
+  precision: 99.6372
+  mis_ins_del_times: 1660
+  traceback_result: True
+--------------------------------------------------
+Execution 3:
+  final_ending_position: (2141, 2098)
+  precision: 99.6124
+  mis_ins_del_times: 259
+  traceback_result: True
+--------------------------------------------------
+Execution 4:
+  final_ending_position: (1141, 1148)
+  precision: 100.0
+  mis_ins_del_times: 132
+  traceback_result: True
+--------------------------------------------------
+Execution 5:
+  final_ending_position: (5725, 5825)
+  precision: 100.0
+  mis_ins_del_times: 507
+  traceback_result: True
+--------------------------------------------------
+Execution 6:
+  final_ending_position: (2120, 2132)
+  precision: 100.0
+  mis_ins_del_times: 195
+  traceback_result: True
+--------------------------------------------------
+Execution 7:
+  final_ending_position: (1100, 1130)
+  precision: 100.0
+  mis_ins_del_times: 116
+  traceback_result: True
+--------------------------------------------------
+Execution 8:
+  final_ending_position: (1138, 1165)
+  precision: 100.0
+  mis_ins_del_times: 115
+  traceback_result: True
+--------------------------------------------------
+Execution 9:
+  final_ending_position: (16563, 16620)
+  precision: 100.0
+  mis_ins_del_times: 1664
+  traceback_result: True
+--------------------------------------------------
+Execution 10:
+  final_ending_position: (175, 168)
+  precision: 100.0
+  mis_ins_del_times: 28
+  traceback_result: True
+--------------------------------------------------
+Execution 11:
+  final_ending_position: (4077, 4106)
+  precision: 99.784
+  mis_ins_del_times: 464
+  traceback_result: True
+--------------------------------------------------
+Execution 12:
+  final_ending_position: (842, 865)
+  precision: 100.0
+  mis_ins_del_times: 80
+  traceback_result: True
+--------------------------------------------------
+Execution 13:
+  final_ending_position: (235, 234)
+  precision: 100.0
+  mis_ins_del_times: 26
+  traceback_result: True
+--------------------------------------------------
+Execution 14:
+  final_ending_position: (6549, 6628)
+  precision: 99.6891
+  mis_ins_del_times: 968
+  traceback_result: True
+--------------------------------------------------
+Execution 15:
+  final_ending_position: (2312, 2357)
+  precision: 100.0
+  mis_ins_del_times: 223
+  traceback_result: True
+--------------------------------------------------
+Execution 16:
+  final_ending_position: (3062, 3125)
+  precision: 100.0
+  mis_ins_del_times: 312
+  traceback_result: True
+--------------------------------------------------
+Execution 17:
+  final_ending_position: (3089, 3150)
+  precision: 100.0
+  mis_ins_del_times: 267
+  traceback_result: True
+--------------------------------------------------
+Execution 18:
+  final_ending_position: (781, 766)
+  precision: 100.0
+  mis_ins_del_times: 87
+  traceback_result: True
+--------------------------------------------------
+Execution 19:
+  final_ending_position: (2521, 2527)
+  precision: 100.0
+  mis_ins_del_times: 347
+  traceback_result: True
+--------------------------------------------------
+Execution 20:
+  final_ending_position: (22606, 22312)
+  precision: 99.6954
+  mis_ins_del_times: 3951
+  traceback_result: True
+--------------------------------------------------
