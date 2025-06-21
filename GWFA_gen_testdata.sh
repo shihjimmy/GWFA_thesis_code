@@ -9,6 +9,16 @@ for dir in ./out_trim_*; do
     fi
 done
 
+
+for dir in ./pbsim3_trim_*; do
+    # Check if it's a directory
+    if [ -d "$dir" ]; then
+        echo "Clearing contents of directory: $dir"
+        rm -rf "$dir"/*  # Remove all files inside the directory but keep the directory
+    fi
+done
+
+
 # Iterate through all subdirectories starting with "out_sequence_"
 for dir in ./out_sequence_*; do
     # Check if it's a directory

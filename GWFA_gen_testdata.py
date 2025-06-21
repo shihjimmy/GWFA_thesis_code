@@ -6,7 +6,7 @@ from tqdm import tqdm
 """ 
     Change this for more generated testdata
 """
-num_of_data = 10
+num_of_data = 50
 
 
 code_to_base = {0: 'A', 1: 'T', 2: 'C', 3: 'G', 4: ' '}
